@@ -2,6 +2,7 @@ import {Route, Routes, Outlet} from 'react-router-dom'
 //import SetUpTournament from './components/my-tournaments/SetUpTournament';
 import SetUpTournament from './components/my-tournaments/SetUpTournament';
 import DisplayDivisions from './components/tournaments-divisions/displayDivisions';
+import DivisionConfig from './components/division-config/DivisionConfig';
 
 
 const TournamentPage=()=>(
@@ -24,6 +25,15 @@ const TournamentPage=()=>(
                         element={
                             <>
                                 <DisplayDivisions />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path='divisionconfig/:id'
+                        element={
+                            <>
+                                <DivisionConfig />
                             </>
                         }
                     />

@@ -1,19 +1,20 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {Step1} from './steps/Step1'
-import {Step2} from './steps/Step2'
-import {Step3} from './steps/Step3'
-import {Step4} from './steps/Step4'
-import {Step5} from './steps/Step5'
+import {Step1Horizentale} from './steps-tournamentset-up-horizentale/step1-horizentale'
+import {Step2Horizentale} from './steps-tournamentset-up-horizentale/step2-horizentale'
+import {Step3Horizentale} from './steps-tournamentset-up-horizentale/step3-horizentale'
+import {Step4Horizentale} from './steps-tournamentset-up-horizentale/step4-horizentale'
+import {Step5Horizentale} from './steps-tournamentset-up-horizentale/step5-horizentale'
 import {KTIcon} from '../../../../_metronic/helpers'
 import {StepperComponent} from '../../../../_metronic/assets/ts/components'
 import {Form, Formik, FormikValues} from 'formik'
-import {createAccountSchemas, ICreateAccount, inits} from './CreateAccountWizardHelper'
+//import {SetUpTournamentschemas, ISetUpTournament, initsSetUp} from './CreateAccountWizardHelper'
+import {SetUpTournamentschemas , ISetUpTournament , initsSetUp} from './SetUpTournamentWizardHelper'
 
 const Horizontal: FC = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
-  const [currentSchema, setCurrentSchema] = useState(createAccountSchemas[0])
-  const [initValues] = useState<ICreateAccount>(inits)
+  const [currentSchema, setCurrentSchema] = useState(SetUpTournamentschemas[0])
+  const [initValues] = useState<ISetUpTournament>(initsSetUp)
   const [isSubmitButton, setSubmitButton] = useState(false)
 
   const loadStepper = () => {
@@ -27,12 +28,12 @@ const Horizontal: FC = () => {
 
     stepper.current.goPrev()
 
-    setCurrentSchema(createAccountSchemas[stepper.current.currentStepIndex - 1])
+    setCurrentSchema(SetUpTournamentschemas[stepper.current.currentStepIndex - 1])
 
     setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber)
   }
 
-  const submitStep = (values: ICreateAccount, actions: FormikValues) => {
+  const submitStep = (values: ISetUpTournament, actions: FormikValues) => {
     if (!stepper.current) {
       return
     }
@@ -46,7 +47,7 @@ const Horizontal: FC = () => {
 
     setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber)
 
-    setCurrentSchema(createAccountSchemas[stepper.current.currentStepIndex - 1])
+    setCurrentSchema(SetUpTournamentschemas[stepper.current.currentStepIndex - 1])
   }
 
   useEffect(() => {
@@ -67,23 +68,23 @@ const Horizontal: FC = () => {
         >
           <div className='stepper-nav mb-5'>
             <div className='stepper-item current' data-kt-stepper-element='nav'>
-              <h3 className='stepper-title'>Account Type</h3>
+              <h3 className='stepper-title'>Tournament Type</h3>
             </div>
 
             <div className='stepper-item' data-kt-stepper-element='nav'>
-              <h3 className='stepper-title'>Account Info</h3>
+              <h3 className='stepper-title'>Tournament Rules</h3>
             </div>
 
             <div className='stepper-item' data-kt-stepper-element='nav'>
-              <h3 className='stepper-title'>Business Info</h3>
+              <h3 className='stepper-title'>Add Teams</h3>
             </div>
 
             <div className='stepper-item' data-kt-stepper-element='nav'>
-              <h3 className='stepper-title'>Billing Details</h3>
+              <h3 className='stepper-title'>Add Players</h3>
             </div>
 
             <div className='stepper-item' data-kt-stepper-element='nav'>
-              <h3 className='stepper-title'>Completed</h3>
+              <h3 className='stepper-title'>Add Agent(s)</h3>
             </div>
           </div>
 
@@ -91,23 +92,23 @@ const Horizontal: FC = () => {
             {() => (
               <Form className='mx-auto mw-600px w-100 pt-15 pb-10' id='kt_create_account_form'>
                 <div className='current' data-kt-stepper-element='content'>
-                  <Step1 />
+                  <Step1Horizentale />
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step2 />
+                  <Step2Horizentale />
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step3 />
+                  <Step3Horizentale />
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step4 />
+                  <Step4Horizentale />
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step5 />
+                  <Step5Horizentale />
                 </div>
 
                 <div className='d-flex flex-stack pt-15'>

@@ -2,6 +2,7 @@
 import React from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../helpers'
 import {Dropdown1} from '../../content/dropdown/Dropdown1'
+import { Link } from 'react-router-dom';
 
 type Props = {
   Divisions: any[]
@@ -88,9 +89,9 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
                     </div>
                   </td>
                   <td className='text-end'>
-                    <a href='#' className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
-                      <KTIcon iconName='arrow-right' className='fs-2' />
-                    </a>
+                  <Link to={`/setuptournament/divisionconfig/${division._id}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
+                    <KTIcon iconName='arrow-right' className='fs-2' />
+                  </Link>
                   </td>
                 </tr>
               ))}
