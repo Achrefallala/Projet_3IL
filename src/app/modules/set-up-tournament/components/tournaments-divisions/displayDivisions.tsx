@@ -11,6 +11,7 @@ const DisplayDivisions = () => {
   useEffect(() => {
     const fetchDivisions = async () => {
         try {
+          // change it with axios not fetch 
           const response = await fetch(`${process.env.REACT_APP_API_URL}/division/divisions/${id}`, {
             headers: {
               Authorization: `Bearer ${auth?.api_token}`

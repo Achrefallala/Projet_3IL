@@ -9,6 +9,7 @@ type Props = {
 }
 
 const TablesWidget1: React.FC<Props> = ({Divisions}) => {
+  
   return (
     <div className='card'>
       {/* begin::Header */}

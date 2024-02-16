@@ -1,8 +1,6 @@
-import React, {FC , useState} from 'react'
+import React, {FC } from 'react'
 import {ErrorMessage, Field } from 'formik'
-import {KTIcon} from '../../../../../_metronic/helpers'
-import { useFormikContext } from 'formik';
-import { ICreateAccount } from '../CreateAccountWizardHelper';
+
 
 const Step2: FC = () => {
 
