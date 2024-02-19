@@ -27,6 +27,7 @@ const Step1 = ({data, updateData, hasError}: StepProps) => {
                 appBasic: {
                   appName: e.target.value,
                   appType: data.appBasic.appType,
+                  tournamentName:data.appBasic.tournamentName
                 },
               })
             }
@@ -84,6 +85,7 @@ const Step1 = ({data, updateData, hasError}: StepProps) => {
                       appBasic: {
                         appName: data.appBasic.appName,
                         appType: 'Quick Online Courses',
+                        tournamentName:data.appBasic.tournamentName
                       },
                     })
                   }
@@ -121,6 +123,7 @@ const Step1 = ({data, updateData, hasError}: StepProps) => {
                       appBasic: {
                         appName: data.appBasic.appName,
                         appType: 'Face to Face Discussions',
+                        tournamentName:data.appBasic.tournamentName
                       },
                     })
                   }
@@ -158,6 +161,7 @@ const Step1 = ({data, updateData, hasError}: StepProps) => {
                       appBasic: {
                         appName: data.appBasic.appName,
                         appType: 'Full Intro Training',
+                        tournamentName:data.appBasic.tournamentName
                       },
                     })
                   }

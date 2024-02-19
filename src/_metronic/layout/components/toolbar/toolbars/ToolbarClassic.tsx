@@ -58,7 +58,7 @@ const ToolbarClassic = () => {
           Create
         </a>
       )}
-      <CreateAppModal show={showCreateAppModal} handleClose={() => setShowCreateAppModal(false)} />
+     
     </div>
   )
 }

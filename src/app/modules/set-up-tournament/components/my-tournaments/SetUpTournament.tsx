@@ -6,27 +6,34 @@ import {TablesWidget11} from '../../../../../_metronic/partials/widgets/tables/T
 function SetUpTournament(){
     const [tournaments, setTournaments] = useState([]);
     const { auth } = useAuth();
-    useEffect(() => {
-      const fetchTournaments = async () => {
-        try {
-          
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/tournament/user-tournaments`, {
-            headers: {
-              Authorization: `Bearer ${auth?.api_token}`
-            }
-          });
-          setTournaments(response.data);
-          console.log('response.data', response.data);
-        } catch (error) {
-          console.error('Error fetching tournaments:', error);
-        }
-      };
+
+
+
+    const fetchTournaments = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tournament/user-tournaments`, {
+          headers: {
+            Authorization: `Bearer ${auth?.api_token}`,
+          },
+        });
+        setTournaments(response.data);
+      } catch (error) {
+        console.error('Error fetching tournaments:', error);
+      }
+    };
   
+    useEffect(() => {
       fetchTournaments();
-    },[ ]); // tableau de dependances condition d update de useEffect
+    }, []);
+  
+    
+    
+    
+    
+    // tableau de dependances condition d update de useEffect
     return(
         <div>
-            <TablesWidget11 tournaments={tournaments} />
+            <TablesWidget11 tournaments={tournaments}  refreshTournaments={fetchTournaments} />
          
 
         </div>

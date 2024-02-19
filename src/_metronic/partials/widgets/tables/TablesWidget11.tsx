@@ -4,11 +4,18 @@ import { KTIcon } from '../../../helpers'
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
+import { CreateAppModal } from '../../modals/create-app-stepper/CreateAppModal';
 
 
 type Props = {
 
   tournaments: any[];
+  refreshTournaments: () => void;
+
+
+
+
+
 }
 
 
@@ -19,15 +26,15 @@ type Props = {
 
 
 
-const TablesWidget11: React.FC<Props> = ({ tournaments }) => {
+const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) => {
 
 
   useEffect(() => {
-    console.log("tournament in init here ",Object.values(tournaments));
+  
     setNewTournaments([].concat(...Object.values(tournaments) as any));
-    console.log("new in init tournament here ",[].concat(...Object.values(newTournaments)));
+   
   },[tournaments]);
-  console.log("tournaments here",[].concat(...Object.values(tournaments)));
+
   const [newTournaments,setNewTournaments]= useState([].concat(...Object.values(tournaments)));
 
 
@@ -37,7 +44,7 @@ const TablesWidget11: React.FC<Props> = ({ tournaments }) => {
     console.log("new tournaments here",newTournaments);
   
     setNewTournaments(prevTournaments => (prevTournaments as any).filter(t => t._id != identifiant))
-    console.log("new tournament after delete ", newTournaments);
+  
     try {
 
       const response = await axios.delete(`http://localhost:3001/tournament/tournament/${identifiant}`);
@@ -52,6 +59,25 @@ const TablesWidget11: React.FC<Props> = ({ tournaments }) => {
 
   
   const combinedTournaments = [].concat(...Object.values(tournaments));
+
+  const [showCreateAppModal, setShowCreateAppModal] = useState<boolean>(false)
+
+
+  const [selectedTournamentId, setSelectedTournamentId] = useState(null);
+
+  const handleOpenModal = (id) => {
+   
+    if (!selectedTournamentId) {
+      setSelectedTournamentId(id);
+    }
+    setShowCreateAppModal(true);
+  };
+  
+
+  const resetSelectedTournamentId = () => {
+    setSelectedTournamentId(null);
+  };
+ 
 
   return (
     <div className='me-10'>
@@ -81,8 +107,7 @@ const TablesWidget11: React.FC<Props> = ({ tournaments }) => {
             {/* begin::Table body */}
             <tbody>
               {(newTournaments as any[]).map((tournament, index) => (
-                console.log('tournament inside map', tournaments),
-                console.log('logos', tournament.tournamentLogo),
+              
                 <tr key={index}>
                   <td>
                     <div className='d-flex align-items-center'>
@@ -131,11 +156,12 @@ const TablesWidget11: React.FC<Props> = ({ tournaments }) => {
                     >
                       <KTIcon iconName='switch' className='fs-3' />
                     </Link>
-                    <a
+                    <a  onClick={() => handleOpenModal(tournament._id)}
                       href='#'
                       className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
                     >
                       <KTIcon iconName='pencil' className='fs-3' />
+                      <CreateAppModal show={showCreateAppModal} handleClose={() => setShowCreateAppModal(false)}   tournamentId={selectedTournamentId} refreshTournaments={refreshTournaments}  onSuccessfulUpdate={resetSelectedTournamentId}/>
                     </a>
                     <a
                       href='#'
