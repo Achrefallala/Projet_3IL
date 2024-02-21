@@ -21,7 +21,7 @@ const TournamentPage=()=>(
                     
 
                     <Route
-                        path='displaydivisions/:id'
+                        path='displaydivisions/:Tournamentid'
                         element={
                             <>
                                 <DisplayDivisions />
@@ -30,7 +30,7 @@ const TournamentPage=()=>(
                     />
 
                     <Route
-                        path='divisionconfig/:id'
+                        path='divisionconfig/:id/:tournamentid'
                         element={
                             <>
                                 <DivisionConfig />

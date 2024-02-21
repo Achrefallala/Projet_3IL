@@ -4,12 +4,14 @@ import { useParams } from "react-router-dom";
 
 const DivisionConfig = () => {
 
-    const { id } = useParams();
-    console.log('id', id);
+    const  {id : divisionId}  = useParams();
+    const  {tournamentid : tournamentId}  = useParams();
+    console.log('tournament id dans compoenent division id', tournamentId);
+    console.log('division id dans compoenent division id', divisionId);
     return (
         <>
         
-        <Horizontal/>
+        <Horizontal divisionId={divisionId} tournamentId={tournamentId} />
         </>
     )
 };

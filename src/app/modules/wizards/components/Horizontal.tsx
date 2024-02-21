@@ -9,14 +9,33 @@ import {StepperComponent} from '../../../../_metronic/assets/ts/components'
 import {Form, Formik, FormikValues} from 'formik'
 //import {SetUpTournamentschemas, ISetUpTournament, initsSetUp} from './CreateAccountWizardHelper'
 import {SetUpTournamentschemas , ISetUpTournament , initsSetUp} from './SetUpTournamentWizardHelper'
+//import { useParams } from 'react-router-dom'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Horizontal: FC = () => {
+
+
+
+interface HorizontalProps {
+  divisionId?: string;
+  tournamentId?: string;
+}
+
+const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
   const [currentSchema, setCurrentSchema] = useState(SetUpTournamentschemas[0])
   const [initValues] = useState<ISetUpTournament>(initsSetUp)
   const [isSubmitButton, setSubmitButton] = useState(false)
 
+
+
+
+
+  const navigate = useNavigate();
+  console.log('division id dans compoenent horizentale id', divisionId);
+  console.log('tournament id dans compoenent horizentale id', tournamentId);
+ 
   const loadStepper = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
   }
@@ -33,22 +52,62 @@ const Horizontal: FC = () => {
     setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber)
   }
 
-  const submitStep = (values: ISetUpTournament, actions: FormikValues) => {
+  const submitStep = async (values: ISetUpTournament, actions: FormikValues) => {
     if (!stepper.current) {
-      return
+      return;
     }
-
+    
+  
     if (stepper.current.currentStepIndex !== stepper.current.totalStepsNumber) {
-      stepper.current.goNext()
+      stepper.current.goNext();
     } else {
-      stepper.current.goto(1)
-      actions.resetForm()
+      try {
+
+        const formData = new FormData();
+        if (!values) {
+          console.log('values is undefined');
+          return;
+        }
+        
+        for (const key in values) {
+          if (key === "teams" && Array.isArray(values[key])) {
+            const aasba = values[key];
+            aasba?.forEach((team, index) => {
+              for (const teamKey in team) {
+                if (teamKey === 'logo' && team[teamKey] instanceof File) {
+                  formData.append('images', team[teamKey] as File);
+                } else if (teamKey !== 'logo') {
+                  formData.append(`teams[${index}][${teamKey}]`, team[teamKey]);
+                }
+              }
+            });
+          } else if (values[key] instanceof File) {
+            //images.push(values[key]);
+          } else {
+            formData.append(key, values[key] as string);
+          }
+        }
+     
+        const response = await axios.put(`${process.env.REACT_APP_API_URL}/division/division/${divisionId}`, formData);
+          
+        
+        console.log('response', response);
+        navigate(`/setuptournament/displaydivisions/${tournamentId}`);
+      } catch (error) {
+        console.log('error', error);
+      }
+  
+      console.log('submit', values);
+      stepper.current.goto(1);
+      actions.resetForm();
+      // navigate to display divisions
+      
+
     }
-
-    setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber)
-
-    setCurrentSchema(SetUpTournamentschemas[stepper.current.currentStepIndex - 1])
-  }
+  
+    setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber);
+    setCurrentSchema(SetUpTournamentschemas[stepper.current.currentStepIndex - 1]);
+  };
 
   useEffect(() => {
     if (!stepperRef.current) {

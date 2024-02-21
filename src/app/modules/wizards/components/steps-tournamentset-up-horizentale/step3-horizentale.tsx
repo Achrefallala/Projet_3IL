@@ -4,24 +4,18 @@ import { ISetUpTournament } from '../SetUpTournamentWizardHelper';
 import { KTIcon } from '../../../../../_metronic/helpers';
 
 const Step3Horizentale = () => {
-    const { values, setFieldValue } = useFormikContext<ISetUpTournament>();
-    const [newTeam, setNewTeam] = useState({ name: '', logo: '' , location: ''});
+    const { values, setFieldValue , errors} = useFormikContext<ISetUpTournament>();
+    const [newTeam, setNewTeam] = useState({ name: '', logo: null , location: ''});
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                setNewTeam({ ...newTeam, logo: reader.result });
-            }
-        };
-        reader.readAsDataURL(file);
+        setNewTeam({ ...newTeam, logo: file });
     };
 
     const handleAddTeam = () => {
         if (newTeam.name && newTeam.logo) {
             setFieldValue('teams', [...(values.teams || []), newTeam]);
-            setNewTeam({ name: '', logo: '' , location: ''});
+            setNewTeam({ name: '', logo: null, location: ''});
         }
     };
 
@@ -29,14 +23,18 @@ const Step3Horizentale = () => {
         <div className="container">
         <div className="row ">
             <div className="col-md-6">
-                <h2>Add New Team</h2>
+           
                 <Field name="name" className="form-control" placeholder="Team Name" value={newTeam.name} onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })} />
+                <br />
                 <Field name="location" className="form-control" placeholder="Team Location" value={newTeam.location} onChange={(e) => setNewTeam({ ...newTeam, location: e.target.value })} />
+                <br />
                 <input type="file" name="logo" className="form-control" onChange={handleFileChange} />
-                <button type="button" className="btn btn-primary mt-2" onClick={handleAddTeam}>Add Team</button>
+                <br />
+                <button type="button" className="btn btn-warning mt-2" onClick={handleAddTeam}><KTIcon iconName='plus' className='fs-3' />Add Team</button>
             </div>
             <div className="col-md-6 ">
-                <h2>Teams Added</h2>
+            <h2><i className="fas fa-users "></i> Teams Added</h2>
+                {errors.teams && <div className="text-danger">{errors.teams}</div>}
                 <table className='table align-middle gs-0 gy-3 ms-10'>
                     <thead>
                         <tr>
@@ -51,23 +49,20 @@ const Step3Horizentale = () => {
                             <tr key={index}>
                                 <td>
                                     <div className='symbol symbol-50px'>
-                                        <img src={team.logo} alt='' />
+                                        {team.logo && <img src={URL.createObjectURL(team.logo)} alt='' />}
                                     </div>
                                 </td>
                                 <td>
-                                    <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
+                                    <span  className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
                                         {team.name}
-                                    </a>
+                                    </span>
                                     <span className='text-muted fw-semibold d-block fs-7'>{team.location}</span>
                                 </td>
                                 <td></td>
                                 <td className='text-end'>
-                                <a
-                                    href=''
-                                    className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
-                                >
+                                <button type="button" className="btn btn-light btn-active-light-primary btn-sm" onClick={() => setFieldValue('teams', values.teams?.filter((_, i) => i !== index))}>
                                     <KTIcon iconName='trash' className='fs-3' />
-                                </a>
+                               </button>
                                 </td>
                             </tr>
                         ))}
