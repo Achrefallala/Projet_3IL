@@ -6,7 +6,8 @@ export interface ISetUpTournament {
     ExtraTime: boolean
     NumberTeams: number | null
     MatchDuration: number | null
-    teams?: { name: string, logo: File | null  , location : string}[]
+    teams?: {name: string, logo: File | null  , location : string }[]
+    
    
 }
 
@@ -16,7 +17,8 @@ const initsSetUp: ISetUpTournament = {
     ExtraTime:false,
     NumberTeams:null,
     MatchDuration: null,
-    teams: []
+    teams: [],
+    
 
 }
 

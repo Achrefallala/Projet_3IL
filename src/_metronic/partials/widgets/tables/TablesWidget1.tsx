@@ -146,13 +146,13 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
                   <td>
                     <div className='d-flex flex-column w-100 me-2'>
                       <div className='d-flex flex-stack mb-2'>
-                      <span className='text-muted me-2 fs-7 fw-semibold'>{division.status === 'pending' ? '20%' : '100%'}</span>
+                      <span className='text-muted me-2 fs-7 fw-semibold'>{division.status === 'pending' ? '20%' : '70%'}</span>
                       </div>
                       <div className='progress h-6px w-100'>
                         <div
                           className='progress-bar bg-primary'
                           role='progressbar'
-                          style={{width: division.status === 'pending' ? '20%' : '100%'}}// customize this width if status pending 10 % is status is in progress (add teams players and games) 30% and
+                          style={{width: division.status === 'pending' ? '20%' : '70%'}}// customize this width if status pending 10 % is status is in progress (add teams players and games) 30% and
                           // if status is completed 100% (add teams players and games and schedule games and add scores and stats and awards  and sponsors
                         ></div>
                       </div>
@@ -160,13 +160,22 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
                   </td>
                   <td className='text-end'>
                     {division.status === 'done' ? (
+                      <>
                       <button className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary' onClick={() => handleCheckClick(division)}>
                         <KTIcon iconName='check' className='fs-2' />
                       </button>
+                      {division.tournamentType === 'singlematch' &&
+                      <Link to={`/setuptournament/matchconfig/${division._id}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary ms-3'>
+                        <KTIcon iconName='arrow-right' className='fs-2' />
+                      </Link>}
+
+                      </>
                     ) : (
+                      
                       <Link to={`/setuptournament/divisionconfig/${division._id}/${division.tournament}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
                         <KTIcon iconName='arrow-right' className='fs-2' />
                       </Link>
+                      
                     )}
                   </td>
                 </tr>

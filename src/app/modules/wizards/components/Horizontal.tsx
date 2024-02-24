@@ -27,6 +27,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
   const [currentSchema, setCurrentSchema] = useState(SetUpTournamentschemas[0])
   const [initValues] = useState<ISetUpTournament>(initsSetUp)
   const [isSubmitButton, setSubmitButton] = useState(false)
+ 
 
 
 
@@ -71,8 +72,8 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
         
         for (const key in values) {
           if (key === "teams" && Array.isArray(values[key])) {
-            const aasba = values[key];
-            aasba?.forEach((team, index) => {
+            const tteam = values[key];
+            tteam?.forEach((team, index) => {
               for (const teamKey in team) {
                 if (teamKey === 'logo' && team[teamKey] instanceof File) {
                   formData.append('images', team[teamKey] as File);
@@ -90,11 +91,12 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
      
         const response = await axios.put(`${process.env.REACT_APP_API_URL}/division/division/${divisionId}`, formData);
           
-        
+       
         console.log('response', response);
         navigate(`/setuptournament/displaydivisions/${tournamentId}`);
       } catch (error) {
         console.log('error', error);
+        
       }
   
       console.log('submit', values);
@@ -159,7 +161,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step3Horizentale />
+                  <Step3Horizentale divisionId={divisionId}  />
                 </div>
 
                 <div data-kt-stepper-element='content'>
@@ -188,7 +190,9 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
                       <span className='indicator-label'>
                         {!isSubmitButton && 'Continue'}
                         {isSubmitButton && 'Submit'}
+
                         <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
+                        
                       </span>
                     </button>
                   </div>
