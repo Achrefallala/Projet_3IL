@@ -15,17 +15,22 @@ import { useNavigate } from 'react-router-dom';
 
 
 
+
 const Vertical = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
   const [currentSchema, setCurrentSchema] = useState(createAccountSchemas[0])
   const [initValues] = useState<ICreateAccount>(inits)
   const navigate = useNavigate();
+
+
  
 
 
   const {auth} = useAuth();
+  const { currentUser } = useAuth();
   console.log('auth', auth);
+
 
 
   const loadStepper = () => {
@@ -60,7 +65,8 @@ const Vertical = () => {
         }
         // Extract the user's ID from the token
        
-       const token = auth?.api_token; // Replace with your actual token
+       const token = auth?.api_token;
+       console.log("hhhh"+token) // Replace with your actual token
        const payload = JSON.parse(atob(token?.split('.')[1] ?? ''));
        const userId = payload.userId;
 
