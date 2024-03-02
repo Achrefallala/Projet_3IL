@@ -8,6 +8,7 @@ export interface UserAddressModel {
   city: string
   state: string
   postCode: string
+  role:any
 }
 
 export interface UserCommunicationModel {
@@ -64,4 +65,5 @@ export interface UserModel {
   communication?: UserCommunicationModel
   address?: UserAddressModel
   socialNetworks?: UserSocialNetworksModel
+  role?:any
 }

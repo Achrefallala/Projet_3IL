@@ -1,12 +1,15 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import {useState} from 'react'
-import * as Yup from 'yup'
-import clsx from 'clsx'
-import {Link} from 'react-router-dom'
-import {useFormik} from 'formik'
-import {getUserByToken, login} from '../core/_requests'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
-import {useAuth} from '../core/Auth'
+import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
+import clsx from 'clsx';
+import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import { getUserByToken, login } from '../core/_requests';
+import { toAbsoluteUrl } from '../../../../_metronic/helpers';
+import { useAuth } from '../core/Auth';
+import GoogleLogin from 'react-google-login';
+import { on } from 'events';
+import { gapi } from 'gapi-script';
+import axios from 'axios';
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -18,43 +21,101 @@ const loginSchema = Yup.object().shape({
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
-})
+});
 
 const initialValues = {
   email: 'admin@demo.com',
   password: 'demo',
-}
+};
 
-/*
-  Formik+YUP+Typescript:
-  https://jaredpalmer.com/formik/docs/tutorial#getfieldprops
-  https://medium.com/@maurice.de.beijer/yup-validation-and-typescript-and-formik-6c342578a20e
-*/
+
+const clientId = "430621675041-97e4t4mj4t67jv4ror7d733sbju6di8l.apps.googleusercontent.com"
+
+
 
 export function Login() {
-  const [loading, setLoading] = useState(false)
-  const {saveAuth, setCurrentUser} = useAuth()
+  const [loading, setLoading] = useState(false);
+  const { saveAuth, setCurrentUser } = useAuth();
+  const navigate = useNavigate(); // Now using useNavigate for redirection
+
 
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
-      setLoading(true)
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
+      setLoading(true);
       try {
-        const {data: auth} = await login(values.email, values.password)
-        saveAuth(auth)
-        const {data: user} = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
-      } catch (error) {
-        console.error(error)
-        saveAuth(undefined)
-        setStatus('The login details are incorrect')
-        setSubmitting(false)
-        setLoading(false)
+        const { data: auth } = await login(values.email, values.password);
+        saveAuth(auth);
+        const { data: user } = await getUserByToken(auth.api_token);
+        setCurrentUser(user);
+
+       
+
+        setLoading(false);
+      } catch (error:any) {
+        console.error(error);
+        saveAuth(undefined);
+        setStatus('The login details are incorrect');
+        setSubmitting(false);
+        setLoading(false);
+
+
+        if (error.response && error.response.status === 403) {
+          setStatus('You are banned');
+        } else {
+          setStatus('The login details are incorrect');
+        }
       }
     },
-  })
+  });
 
+  const onSuccess = async (googleData) => {
+    try {
+     
+      const response = await axios.post('http://localhost:3001/user/google-login', {
+        tokenId: googleData.tokenId,
+      });
+  
+      const data = response.data;
+  
+      if (data.api_token) {
+      
+        localStorage.setItem('token', data.api_token);
+        console.log(data.user);
+        saveAuth(data.api_token);
+        
+       
+        setCurrentUser(data.user);
+  
+       
+        alert(`Connexion réussie. Bienvenue ${data.user.name} !`);
+       
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion avec Google:", error);
+    
+      alert("La connexion a échoué. Veuillez réessayer.");
+    }
+  };
+  
+
+  const onFailure = (res) => {
+    console.log('Login failed: res:', res);
+    alert(
+      `Failed to login. 😢 Please ping this to repo owner twitter.com/sivanesh_fiz`
+    );
+  }
+
+  useEffect(() => {
+    function start(){
+      gapi.client.init({
+        clientId: clientId,
+        scope:""
+      })
+    };
+    gapi.load('client:auth2', start);
+    });
   return (
     <form
       className='form w-100'
@@ -74,17 +135,17 @@ export function Login() {
         {/* begin::Col */}
         <div className='col-md-6'>
           {/* begin::Google link */}
-          <a
-            href='#'
-            className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
-          >
-            <img
-              alt='Logo'
-              src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-              className='h-15px me-3'
-            />
-            Sign in with Google
-          </a>
+         <div id="signInButton">
+
+      <GoogleLogin
+        clientId={clientId}
+        buttonText="Login"
+        onSuccess={onSuccess}
+        onFailure={onFailure}
+        cookiePolicy={'single_host_origin'}
+      />
+
+         </div>
           {/* end::Google link */}
         </div>
         {/* end::Col */}
@@ -215,6 +276,8 @@ export function Login() {
         </button>
       </div>
       {/* end::Action */}
+
+     
 
       <div className='text-gray-500 text-center fw-semibold fs-6'>
         Not a Member yet?{' '}

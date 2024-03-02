@@ -1,46 +1,42 @@
 import {useState} from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {Link} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 import {useFormik} from 'formik'
-import {requestPassword} from '../core/_requests'
+import axios from 'axios'
 
 const initialValues = {
-  email: 'admin@demo.com',
+  newPassword: '',
 }
 
-
-const forgotPasswordSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
+const setPasswordSchema = Yup.object().shape({
+  newPassword: Yup.string()
+    .min(8, 'Minimum 8 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
-    
+    .required('Password is required'),
 })
 
-export function ForgotPassword() {
+export function SetPassword() {
+  const { email } = useParams<{ email: string }>();
   const [loading, setLoading] = useState(false)
   const [hasErrors, setHasErrors] = useState<boolean | undefined>(undefined)
   const formik = useFormik({
     initialValues,
-    validationSchema: forgotPasswordSchema,
+    validationSchema: setPasswordSchema,
     onSubmit: (values, {setStatus, setSubmitting}) => {
       setLoading(true);
       setHasErrors(undefined);
-      requestPassword(values.email)
+      axios.put(`http://localhost:3001/user/change-password/${email}`, { newPassword: values.newPassword })
         .then(({data}) => {
           setHasErrors(false);
           setLoading(false);
-         
-          setStatus(data.message || 'Email sent successfully. Please check your inbox.');
+          setStatus(data.message || 'Password updated successfully.');
         })
         .catch((error) => {
           setHasErrors(true);
           setLoading(false);
           setSubmitting(false);
-          
-          setStatus(error.response.data.error || 'An unexpected error occurred. Please try again.');
+          setStatus(error.response.data.message || 'An unexpected error occurred. Please try again.');
         });
     },
   })
@@ -53,18 +49,12 @@ export function ForgotPassword() {
       onSubmit={formik.handleSubmit}
     >
       <div className='text-center mb-10'>
-        {/* begin::Title */}
-        <h1 className='text-dark fw-bolder mb-3'>Forgot Password ?</h1>
-        {/* end::Title */}
-
-        {/* begin::Link */}
+        <h1 className='text-dark fw-bolder mb-3'>Set New Password</h1>
         <div className='text-gray-500 fw-semibold fs-6'>
-          Enter your email to reset your password.
+          Enter your new password below.
         </div>
-        {/* end::Link */}
       </div>
 
-      {/* begin::Title */}
       {hasErrors === true && (
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>
@@ -75,38 +65,32 @@ export function ForgotPassword() {
 
       {hasErrors === false && (
         <div className='mb-10 bg-light-info p-8 rounded'>
-          <div className='text-info'>Sent password reset. Please check your email</div>
+          <div className='text-info'>Password updated successfully.</div>
         </div>
       )}
-      {/* end::Title */}
 
-      {/* begin::Form group */}
       <div className='fv-row mb-8'>
-        <label className='form-label fw-bolder text-gray-900 fs-6'>Email</label>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>New Password</label>
         <input
-          type='email'
-          placeholder=''
-          autoComplete='off'
-          {...formik.getFieldProps('email')}
+          type='password'
+          {...formik.getFieldProps('newPassword')}
           className={clsx(
             'form-control bg-transparent',
-            {'is-invalid': formik.touched.email && formik.errors.email},
+            {'is-invalid': formik.touched.newPassword && formik.errors.newPassword},
             {
-              'is-valid': formik.touched.email && !formik.errors.email,
+              'is-valid': formik.touched.newPassword && !formik.errors.newPassword,
             }
           )}
         />
-        {formik.touched.email && formik.errors.email && (
+        {formik.touched.newPassword && formik.errors.newPassword && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.email}</span>
+              <span role='alert'>{formik.errors.newPassword}</span>
             </div>
           </div>
         )}
       </div>
-      {/* end::Form group */}
 
-      {/* begin::Form group */}
       <div className='d-flex flex-wrap justify-content-center pb-lg-0'>
         <button type='submit' id='kt_password_reset_submit' className='btn btn-primary me-4'>
           <span className='indicator-label'>Submit</span>
@@ -124,11 +108,10 @@ export function ForgotPassword() {
             className='btn btn-light'
             disabled={formik.isSubmitting || !formik.isValid}
           >
-            Cancel
+            Login
           </button>
         </Link>{' '}
       </div>
-      {/* end::Form group */}
     </form>
   )
 }

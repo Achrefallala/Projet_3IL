@@ -65,7 +65,13 @@ const CreateAppModal = ({show, handleClose, tournamentId,refreshTournaments,onSu
               appBasic: {
                 appName: tournament.tournamentName,
                 appType: 'Quick Online Courses',
-                tournamentName: tournament.divisions,
+                divisions: tournament.divisions,
+                tournamentSexe:tournament.tournamentSexe,
+                tournamentLevel:tournament.tournamentLevel,
+                tournamentLogo:tournament.tournamentLogo,
+                tournamentLogoPreview:''
+               
+
               },
               appFramework: 'HTML5',
               appDatabase: {
@@ -94,22 +100,36 @@ const CreateAppModal = ({show, handleClose, tournamentId,refreshTournaments,onSu
   const handleSubmit = async () => {
     if (!tournamentId) {
       console.error('No tournament ID provided for update.');
-      return; // Sortie anticipée si aucun ID de tournoi n'est fourni
+      return; 
     }
   
     try {
-      const updateData = {
-        tournamentName: data.appBasic.appName, // Utilisation de appName comme nouveau tournamentName
-      };
-  
-      const response = await axios.put(`http://localhost:3001/tournament/tournament/${tournamentId}`, updateData);
+      // Create a FormData object
+      const formData = new FormData();
+      // Append the file if it exists
+      if (data.appBasic.tournamentLogo instanceof File) {
+        formData.append('tournamentLogo', data.appBasic.tournamentLogo);
+      }
+
+      // Append other fields
+      formData.append('tournamentName', data.appBasic.appName);
+      formData.append('divisions', data.appBasic.divisions);
+      formData.append('tournamentSexe', data.appBasic.tournamentSexe);
+      formData.append('tournamentLevel', data.appBasic.tournamentLevel);
+      // Note: You don't need to append tournamentLogoPreview as it's just for client-side preview
+
+      const response = await axios.put(`http://localhost:3001/tournament/tournament/${tournamentId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
   
       if (response.status === 200) {
         console.log('Tournament updated successfully:', response.data);
-        refreshTournaments(); // Appel de la fonction fournie pour mettre à jour l'UI
-        handleClose(); // Fermeture du modal
+        refreshTournaments(); 
+        handleClose(); 
         if (onSuccessfulUpdate) {
-          onSuccessfulUpdate(); // Réinitialiser l'ID du tournoi dans le composant parent
+          onSuccessfulUpdate(); 
         }
       } else {
         throw new Error(`Failed to update the tournament. Status code: ${response.status}`);
@@ -119,6 +139,7 @@ const CreateAppModal = ({show, handleClose, tournamentId,refreshTournaments,onSu
       setHasError(true);
     }
   };
+
   
 
   
@@ -173,7 +194,7 @@ const CreateAppModal = ({show, handleClose, tournamentId,refreshTournaments,onSu
                 <button
   type="button"
   className="btn btn-lg btn-primary"
-  onClick={handleSubmit} // Call handleSubmit when the button is clicked
+  onClick={handleSubmit}
 >
   Submit <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
 </button>

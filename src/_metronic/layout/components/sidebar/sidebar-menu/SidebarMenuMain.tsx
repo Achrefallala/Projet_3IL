@@ -4,9 +4,11 @@ import {useIntl} from 'react-intl'
 import {KTIcon} from '../../../../helpers'
 import {SidebarMenuItemWithSub} from './SidebarMenuItemWithSub'
 import {SidebarMenuItem} from './SidebarMenuItem'
+import { useAuth } from '../../../../../app/modules/auth/core/Auth';
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
+  const { currentUser } = useAuth();
 
   return (
     <>
@@ -17,24 +19,45 @@ const SidebarMenuMain = () => {
         fontIcon='bi-app-indicator'
       />
       <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' />
+
+
+
+      {currentUser && currentUser.role === 'creator' &&(
       <SidebarMenuItem to='/tournament' icon='switch' title='tournament' fontIcon='bi-layers' />
-     
+      )}
       <div className='menu-item'>
         <div className='menu-content pt-8 pb-2'>
           <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Crafted</span>
         </div>
       </div>
 
-      <SidebarMenuItemWithSub
-        to='/crafted/setuptournament'
-        title='Set Up Tournament'
-        icon='element-plus'
-        fontIcon='bi-person'
-      >
-        <SidebarMenuItem to='/setuptournament/mytournaments' title='My Tournament(s)' hasBullet={true} />
-        <SidebarMenuItem to='/crafted/setuptournament/addagents' title='Add Agent(s)' hasBullet={true} />
-      </SidebarMenuItemWithSub>
+ 
+      {currentUser && currentUser.role === 'creator' &&(
+        <SidebarMenuItemWithSub
+          to='/crafted/setuptournament'
+          title='Set Up Tournament'
+          icon='element-plus'
+          fontIcon='bi-person'
+        >
+          <SidebarMenuItem to='/setuptournament/mytournaments' title='My Tournament(s)' hasBullet={true} />
+    
+        </SidebarMenuItemWithSub>
+      )}
 
+
+      {currentUser && currentUser.role === 'admin' &&(
+<SidebarMenuItemWithSub
+          to='/AdminPage/alltournaments'
+          title='Admin'
+          icon='element-plus'
+          fontIcon='bi-person'
+        >
+          <SidebarMenuItem to='/AdminPage/alltournaments' title='All the Tournaments' hasBullet={true} />
+          <SidebarMenuItem to='/AdminPage/Users' title='All Users' hasBullet={true} />
+    
+        </SidebarMenuItemWithSub>
+
+)}
 
 
 
@@ -81,6 +104,9 @@ const SidebarMenuMain = () => {
           <SidebarMenuItem to='/crafted/pages/wizards/vertical' title='Vertical' hasBullet={true} />
         </SidebarMenuItemWithSub>
       </SidebarMenuItemWithSub>
+
+
+
       <SidebarMenuItemWithSub
         to='/crafted/accounts'
         title='Accounts'
