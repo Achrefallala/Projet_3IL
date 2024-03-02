@@ -1,15 +1,86 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react'
+import React ,{useState}from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../helpers'
 import {Dropdown1} from '../../content/dropdown/Dropdown1'
+import { Link } from 'react-router-dom';
+import { Modal , Button } from 'react-bootstrap';
 
 type Props = {
   Divisions: any[]
 }
 
+type DivisionType = {
+  tournamentType: string;
+  PlayerPerTeam: number | null;
+  ExtraTime: boolean;
+  NumberTeams: number | null;
+  MatchDuration: number | null;
+  teams?: { name: string, logo: string, location: string }[];
+  // add other properties of division here...
+};
+
 const TablesWidget1: React.FC<Props> = ({Divisions}) => {
+  const [show, setShow] = useState(false);
+  const [currentDivision, setCurrentDivision] = useState<DivisionType | null>(null);
+  console.log(currentDivision)
+
+
+  const handleCheckClick = (division) => {
+    setCurrentDivision(division);
+    setShow(true);
+  };
+
+  const handleClose = () => {
+    setShow(false);
+  };
+
+  
   return (
     <div className='card'>
+
+      {/** appear popup modal division details */}
+      <Modal show={show} onHide={handleClose} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Division Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+  <div className="card">
+    <ul className="list-group list-group-flush">
+      <li className="list-group-item"><strong>Tournament Type:</strong> {(currentDivision as any)?.tournamentType}</li>
+      <li className="list-group-item"><strong>Player Per Team:</strong> {(currentDivision as any)?.PlayerPerTeam}</li>
+      <li className="list-group-item"><strong>Extra Time:</strong> {(currentDivision as any)?.ExtraTime ? 'Yes' : 'No'}</li>
+      <li className="list-group-item"><strong>Number of Teams:</strong> {(currentDivision as any)?.NumberTeams}</li>
+      <li className="list-group-item"><strong>Match Duration:</strong> {(currentDivision as any)?.MatchDuration}</li>
+    </ul>
+  </div>
+  <div className="row">
+    {currentDivision && currentDivision.teams && currentDivision.teams.map((team, index) => (
+      <div className="col-md-4 mt-3" key={index}>
+        <div className="card border-primary">
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item"><strong>Name:</strong> {team.name}</li>
+            <li className="list-group-item"><strong>Location:</strong> {team.location}</li>
+            
+            {team.logo && (
+              <li className="list-group-item">
+                <img src={`${process.env.REACT_APP_API_URL}/${team.logo.replace(/\\/g, '/')}`} style={{width: '100px', height: '100px'}}  alt='' />
+              </li>
+            )}
+            
+          </ul>
+        </div>
+      </div>
+    ))}
+  </div>
+</Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={handleClose}>
+              OK
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+              {/** end of the modal pop up division details */}
       {/* begin::Header */}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
@@ -75,22 +146,34 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
                   <td>
                     <div className='d-flex flex-column w-100 me-2'>
                       <div className='d-flex flex-stack mb-2'>
-                        <span className='text-muted me-2 fs-7 fw-semibold'>20%</span>
+                      <span className='text-muted me-2 fs-7 fw-semibold'>{division.status === 'pending' ? '20%' : division.status === 'progress' ? '70%' : '100%'}</span>
                       </div>
                       <div className='progress h-6px w-100'>
                         <div
                           className='progress-bar bg-primary'
                           role='progressbar'
-                          style={{width: '20%'}} // customize this width if status pending 10 % is status is in progress (add teams players and games) 30% and
+                          style={{width: division.status === 'pending' ? '20%' : division.status === 'progress' ? '70%' : '100%'}}
                           // if status is completed 100% (add teams players and games and schedule games and add scores and stats and awards  and sponsors
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className='text-end'>
-                    <a href='#' className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
-                      <KTIcon iconName='arrow-right' className='fs-2' />
-                    </a>
+                  {(division.status === 'progress' || division.status === 'completed') ? (
+                        <>
+                            <button className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary' onClick={() => handleCheckClick(division)}>
+                                <KTIcon iconName='check' className='fs-2' />
+                            </button>
+                            {division.tournamentType === 'singlematch' && division.status !== 'completed' &&
+                            <Link to={`/setuptournament/matchconfig/${division._id}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary ms-3'>
+                                <KTIcon iconName='arrow-right' className='fs-2' />
+                            </Link>}
+                        </>
+                    ) : (
+                        <Link to={`/setuptournament/divisionconfig/${division._id}/${division.tournament}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
+                            <KTIcon iconName='arrow-right' className='fs-2' />
+                        </Link>
+                    )}
                   </td>
                 </tr>
               ))}

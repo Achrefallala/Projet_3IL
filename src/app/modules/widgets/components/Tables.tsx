@@ -1,6 +1,6 @@
 import React, {FC} from 'react'
 import {
-  TablesWidget1,
+ 
   TablesWidget2,
   TablesWidget3,
   TablesWidget4,

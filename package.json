@@ -4,9 +4,14 @@
   "private": true,
   "homepage": "/metronic8/react/demo1",
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
     "@formatjs/intl-pluralrules": "5.2.4",
     "@formatjs/intl-relativetimeformat": "11.2.4",
     "@fortawesome/fontawesome-free": "6.1.1",
+    "@mui/material": "^5.15.10",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.16",
     "@popperjs/core": "^2.11.6",
     "animate.css": "4.1.1",
     "apexcharts": "3.35.0",
@@ -38,6 +43,7 @@
     "react-topbar-progress-indicator": "4.1.1",
     "react-tournament-bracket": "^0.2.4",
     "socicon": "3.0.5",
+    "styled-components": "^6.1.8",
     "yup": "^1.0.0"
   },
   "devDependencies": {
