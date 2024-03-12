@@ -13,6 +13,7 @@ import TournamentConfig from '../pages/tournament/TournamentConfig'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
+  const TeamPage = lazy(() => import('../modules/TeamModule/TeamPage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
@@ -34,6 +35,15 @@ const PrivateRoutes = () => {
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
+
+        <Route
+          path='/setupTeam/*'
+          element={
+            <SuspensedView>
+              <TeamPage />
+            </SuspensedView>
+          }
+        />
 
         <Route
           path='/setuptournament/*'
