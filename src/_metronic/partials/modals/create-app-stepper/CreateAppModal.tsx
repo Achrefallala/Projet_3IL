@@ -1,25 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {Modal} from 'react-bootstrap'
 import {defaultCreateAppData, ICreateAppData} from './IAppModels'
 import {StepperComponent} from '../../../assets/ts/components'
 import {KTIcon} from '../../../helpers'
 import {Step1} from './steps/Step1'
-import {Step2} from './steps/Step2'
-import {Step3} from './steps/Step3'
-import {Step4} from './steps/Step4'
-import {Step5} from './steps/Step5'
+
+import axios from 'axios'
 
 type Props = {
   show: boolean
   handleClose: () => void
+  tournamentId: string | null; 
+  refreshTournaments: () => void;
+  onSuccessfulUpdate?: () => void;
 }
 
 const modalsRoot = document.getElementById('root-modals') || document.body
 
-const CreateAppModal = ({show, handleClose}: Props) => {
+const CreateAppModal = ({show, handleClose, tournamentId,refreshTournaments,onSuccessfulUpdate}: Props) => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
   const [data, setData] = useState<ICreateAppData>(defaultCreateAppData)
@@ -49,36 +50,100 @@ const CreateAppModal = ({show, handleClose}: Props) => {
     return true
   }
 
-  const prevStep = () => {
-    if (!stepper.current) {
-      return
-    }
+  useEffect(() => {
+    const findone = async () => {
+      if (!tournamentId) 
+      return;
+    {
+        try {
+          
+          const response = await axios.get(`http://localhost:3001/tournament/tournament/${tournamentId}`);
+          if (response.status === 200) {
+            console.log(tournamentId);
+            const { tournament } = response.data;
+            const transformedData: ICreateAppData = {
+              appBasic: {
+                appName: tournament.tournamentName,
+                appType: 'Quick Online Courses',
+                divisions: tournament.divisions,
+                tournamentSexe:tournament.tournamentSexe,
+                tournamentLevel:tournament.tournamentLevel,
+                tournamentLogo:tournament.tournamentLogo,
+                tournamentLogoPreview:''
+               
 
-    stepper.current.goPrev()
-  }
-
-  const nextStep = () => {
-    setHasError(false)
-    if (!stepper.current) {
-      return
-    }
-
-    if (stepper.current.getCurrentStepIndex() === 1) {
-      if (!checkAppBasic()) {
-        setHasError(true)
-        return
+              },
+              appFramework: 'HTML5',
+              appDatabase: {
+                databaseName: tournament.tournamentName,
+                databaseSolution: 'MySQL',
+              },
+              appStorage: 'Basic Server',
+            };
+            setData(transformedData);
+          } else {
+            throw new Error('Failed to fetch the tournament');
+          }
+        } catch (error) {
+          console.error('Failed to fetch tournament:', error);
+          setHasError(true);
+        }
       }
-    }
+    };
 
-    if (stepper.current.getCurrentStepIndex() === 3) {
-      if (!checkAppDataBase()) {
-        setHasError(true)
-        return
+    if (show) {
+      findone();
+    }
+  }, [show,tournamentId]);
+
+
+  const handleSubmit = async () => {
+    if (!tournamentId) {
+      console.error('No tournament ID provided for update.');
+      return; 
+    }
+  
+    try {
+      // Create a FormData object
+      const formData = new FormData();
+      // Append the file if it exists
+      if (data.appBasic.tournamentLogo instanceof File) {
+        formData.append('tournamentLogo', data.appBasic.tournamentLogo);
       }
-    }
 
-    stepper.current.goNext()
-  }
+      // Append other fields
+      formData.append('tournamentName', data.appBasic.appName);
+      formData.append('divisions', data.appBasic.divisions);
+      formData.append('tournamentSexe', data.appBasic.tournamentSexe);
+      formData.append('tournamentLevel', data.appBasic.tournamentLevel);
+      // Note: You don't need to append tournamentLogoPreview as it's just for client-side preview
+
+      const response = await axios.put(`http://localhost:3001/tournament/tournament/${tournamentId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log('Tournament updated successfully:', response.data);
+        refreshTournaments(); 
+        handleClose(); 
+        if (onSuccessfulUpdate) {
+          onSuccessfulUpdate(); 
+        }
+      } else {
+        throw new Error(`Failed to update the tournament. Status code: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to update tournament:', error);
+      setHasError(true);
+    }
+  };
+
+  
+
+  
+  
 
   const submit = () => {
     window.location.reload()
@@ -111,185 +176,31 @@ const CreateAppModal = ({show, handleClose}: Props) => {
           className='stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid'
           id='kt_modal_create_app_stepper'
         >
-          {/* begin::Aside*/}
-          <div className='d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px'>
-            {/* begin::Nav*/}
-            <div className='stepper-nav ps-lg-10'>
-              {/* begin::Step 1*/}
-              <div className='stepper-item current' data-kt-stepper-element='nav'>
-                {/* begin::Wrapper*/}
-                <div className='stepper-wrapper'>
-                  {/* begin::Icon*/}
-                  <div className='stepper-icon w-40px h-40px'>
-                    <i className='stepper-check fas fa-check'></i>
-                    <span className='stepper-number'>1</span>
-                  </div>
-                  {/* end::Icon*/}
-
-                  {/* begin::Label*/}
-                  <div className='stepper-label'>
-                    <h3 className='stepper-title'>Details</h3>
-
-                    <div className='stepper-desc'>Name your App</div>
-                  </div>
-                  {/* end::Label*/}
-                </div>
-                {/* end::Wrapper*/}
-
-                {/* begin::Line*/}
-                <div className='stepper-line h-40px'></div>
-                {/* end::Line*/}
-              </div>
-              {/* end::Step 1*/}
-
-              {/* begin::Step 2*/}
-              <div className='stepper-item' data-kt-stepper-element='nav'>
-                {/* begin::Wrapper*/}
-                <div className='stepper-wrapper'>
-                  {/* begin::Icon*/}
-                  <div className='stepper-icon w-40px h-40px'>
-                    <i className='stepper-check fas fa-check'></i>
-                    <span className='stepper-number'>2</span>
-                  </div>
-                  {/* begin::Icon*/}
-
-                  {/* begin::Label*/}
-                  <div className='stepper-label'>
-                    <h3 className='stepper-title'>Frameworks</h3>
-
-                    <div className='stepper-desc'>Define your app framework</div>
-                  </div>
-                  {/* begin::Label*/}
-                </div>
-                {/* end::Wrapper*/}
-
-                {/* begin::Line*/}
-                <div className='stepper-line h-40px'></div>
-                {/* end::Line*/}
-              </div>
-              {/* end::Step 2*/}
-
-              {/* begin::Step 3*/}
-              <div className='stepper-item' data-kt-stepper-element='nav'>
-                {/* begin::Wrapper*/}
-                <div className='stepper-wrapper'>
-                  {/* begin::Icon*/}
-                  <div className='stepper-icon w-40px h-40px'>
-                    <i className='stepper-check fas fa-check'></i>
-                    <span className='stepper-number'>3</span>
-                  </div>
-                  {/* end::Icon*/}
-
-                  {/* begin::Label*/}
-                  <div className='stepper-label'>
-                    <h3 className='stepper-title'>Database</h3>
-
-                    <div className='stepper-desc'>Select the app database type</div>
-                  </div>
-                  {/* end::Label*/}
-                </div>
-                {/* end::Wrapper*/}
-
-                {/* begin::Line*/}
-                <div className='stepper-line h-40px'></div>
-                {/* end::Line*/}
-              </div>
-              {/* end::Step 3*/}
-
-              {/* begin::Step 4*/}
-              <div className='stepper-item' data-kt-stepper-element='nav'>
-                {/* begin::Wrapper*/}
-                <div className='stepper-wrapper'>
-                  {/* begin::Icon*/}
-                  <div className='stepper-icon w-40px h-40px'>
-                    <i className='stepper-check fas fa-check'></i>
-                    <span className='stepper-number'>4</span>
-                  </div>
-                  {/* end::Icon*/}
-
-                  {/* begin::Label*/}
-                  <div className='stepper-label'>
-                    <h3 className='stepper-title'>Storage</h3>
-
-                    <div className='stepper-desc'>Provide storage details</div>
-                  </div>
-                  {/* end::Label*/}
-                </div>
-                {/* end::Wrapper*/}
-
-                {/* begin::Line*/}
-                <div className='stepper-line h-40px'></div>
-                {/* end::Line*/}
-              </div>
-              {/* end::Step 4*/}
-
-              {/* begin::Step 5*/}
-              <div className='stepper-item' data-kt-stepper-element='nav'>
-                {/* begin::Wrapper*/}
-                <div className='stepper-wrapper'>
-                  {/* begin::Icon*/}
-                  <div className='stepper-icon w-40px h-40px'>
-                    <i className='stepper-check fas fa-check'></i>
-                    <span className='stepper-number'>5</span>
-                  </div>
-                  {/* end::Icon*/}
-
-                  {/* begin::Label*/}
-                  <div className='stepper-label'>
-                    <h3 className='stepper-title'>Completed</h3>
-
-                    <div className='stepper-desc'>Review and Submit</div>
-                  </div>
-                  {/* end::Label*/}
-                </div>
-                {/* end::Wrapper*/}
-              </div>
-              {/* end::Step 5*/}
-            </div>
-            {/* end::Nav*/}
-          </div>
-          {/* begin::Aside*/}
+         
 
           {/*begin::Content */}
           <div className='flex-row-fluid py-lg-5 px-lg-15'>
             {/*begin::Form */}
             <form noValidate id='kt_modal_create_app_form'>
               <Step1 data={data} updateData={updateData} hasError={hasError} />
-              <Step2 data={data} updateData={updateData} hasError={hasError} />
-              <Step3 data={data} updateData={updateData} hasError={hasError} />
-              <Step4 data={data} updateData={updateData} hasError={hasError} />
-              <Step5 />
+             
 
               {/*begin::Actions */}
               <div className='d-flex flex-stack pt-10'>
                 <div className='me-2'>
-                  <button
-                    type='button'
-                    className='btn btn-lg btn-light-primary me-3'
-                    data-kt-stepper-action='previous'
-                    onClick={prevStep}
-                  >
-                    <KTIcon iconName='arrow-left' className='fs-3 me-1' /> Previous
-                  </button>
+                  
                 </div>
                 <div>
-                  <button
-                    type='button'
-                    className='btn btn-lg btn-primary'
-                    data-kt-stepper-action='submit'
-                    onClick={submit}
-                  >
-                    Submit <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
-                  </button>
+                <button
+  type="button"
+  className="btn btn-lg btn-primary"
+  onClick={handleSubmit}
+>
+  Submit <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
+</button>
 
-                  <button
-                    type='button'
-                    className='btn btn-lg btn-primary'
-                    data-kt-stepper-action='next'
-                    onClick={nextStep}
-                  >
-                    Next Step <KTIcon iconName='arrow-right' className='fs-3 ms-1 me-0' />
-                  </button>
+
+                
                 </div>
               </div>
               {/*end::Actions */}

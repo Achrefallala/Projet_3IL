@@ -6,6 +6,7 @@ import {MasterInit} from '../_metronic/layout/MasterInit'
 import {AuthInit} from './modules/auth'
 import {ThemeModeProvider} from '../_metronic/partials'
 
+
 const App = () => {
   return (
     <Suspense fallback={<LayoutSplashScreen />}>
@@ -15,6 +16,7 @@ const App = () => {
             <AuthInit>
               <Outlet />
               <MasterInit />
+            
             </AuthInit>
           </ThemeModeProvider>
       </I18nProvider>

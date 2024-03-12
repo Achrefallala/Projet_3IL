@@ -8,6 +8,9 @@ import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
 import {WithChildren} from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 import TournamentConfig from '../pages/tournament/TournamentConfig'
+import { useAuth } from '../modules/auth'
+import AdminPage from '../modules/admin-module/AdminPage'
+
 
 
 
@@ -22,6 +25,7 @@ const PrivateRoutes = () => {
   //const TournamentPage= lazy(() => import('../pages/setupTournament/TournamentPage'))
   const TournamentPage = lazy(() => import('../modules/set-up-tournament/TournamentPage'))
 
+  const { currentUser } = useAuth();
 
 
   return (
@@ -36,6 +40,8 @@ const PrivateRoutes = () => {
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
 
+
+{currentUser && currentUser.role === 'creator' &&(
         <Route
           path='/setupTeam/*'
           element={
@@ -54,6 +60,20 @@ const PrivateRoutes = () => {
           }
         />
     
+        )}
+
+
+{currentUser && currentUser.role === 'admin' &&(
+<Route
+          path='/AdminPage/*'
+          element={
+            <SuspensedView>
+              <AdminPage/>
+            </SuspensedView>
+          }
+        />
+)}
+
 
         <Route
           path='crafted/pages/profile/*'

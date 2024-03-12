@@ -4,11 +4,13 @@ import {useState, useEffect} from 'react'
 import {useFormik} from 'formik'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {getUserByToken, register} from '../core/_requests'
+import {getUserByToken, registergoogle,register} from '../core/_requests'
 import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {PasswordMeterComponent} from '../../../../_metronic/assets/ts/components'
 import {useAuth} from '../core/Auth'
+import GoogleLogin from 'react-google-login'
+import { gapi } from 'gapi-script'
 
 const initialValues = {
   firstname: '',
@@ -18,6 +20,8 @@ const initialValues = {
   changepassword: '',
   acceptTerms: false,
 }
+
+const clientId = "430621675041-97e4t4mj4t67jv4ror7d733sbju6di8l.apps.googleusercontent.com"
 
 const registrationSchema = Yup.object().shape({
   firstname: Yup.string()
@@ -79,6 +83,61 @@ export function Registration() {
     PasswordMeterComponent.bootstrap()
   }, [])
 
+
+  const onSuccess = async (googleData) => {
+    const { email, givenName: firstname, familyName: lastname } = googleData.profileObj;
+    const googleToken = googleData.tokenId;
+  
+    try {
+      // Créez un objet avec les données à envoyer
+      const registrationData = {
+        email,
+        firstname,
+        lastname,
+        googleToken, // Ajouté comme une propriété de l'objet
+        password: '', // Défini explicitement à vide
+        password_confirmation: '', // Défini explicitement à vide
+      };
+
+      // Utilisez cet objet comme arguments séparés pour la fonction register
+      const { data: auth } = await registergoogle(
+        registrationData.email,
+        registrationData.firstname,
+        registrationData.lastname,
+        registrationData.googleToken,
+        registrationData.password,
+        registrationData.password_confirmation
+      );
+      saveAuth(auth);
+      // Suite de la logique...
+    } catch (error) {
+      console.error("Erreur lors de l'inscription avec Google:", error);
+      // Gestion des erreurs...
+    }
+  };
+  
+  
+  
+  
+  
+
+  const onFailure = (res) => {
+    console.log('Login failed: res:', res);
+    alert(
+      `Failed to login. 😢 Please ping this to repo owner twitter.com/sivanesh_fiz`
+    );
+  }
+
+  useEffect(() => {
+    function start(){
+      gapi.client.init({
+        clientId: clientId,
+        scope:""
+      })
+    };
+    gapi.load('client:auth2', start);
+    });
+
   return (
     <form
       className='form w-100 fv-plugins-bootstrap5 fv-plugins-framework'
@@ -101,17 +160,17 @@ export function Registration() {
         {/* begin::Col */}
         <div className='col-md-6'>
           {/* begin::Google link */}
-          <a
-            href='#'
-            className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
-          >
-            <img
-              alt='Logo'
-              src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-              className='h-15px me-3'
-            />
-            Sign in with Google
-          </a>
+          <div id="signInButton">
+
+<GoogleLogin
+  clientId={clientId}
+  buttonText="Login"
+  onSuccess={onSuccess}
+  onFailure={onFailure}
+  cookiePolicy={'single_host_origin'}
+/>
+
+   </div>
           {/* end::Google link */}
         </div>
         {/* end::Col */}

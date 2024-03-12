@@ -5,13 +5,14 @@ import { TablesWidget1 } from '../../../../../_metronic/partials/widgets/tables/
 
 const DisplayDivisions = () => {
   const [divisions, setDivisions] = useState([]);
-  const { id } = useParams();
+  const { Tournamentid } = useParams();
   const { auth } = useAuth();
 
   useEffect(() => {
     const fetchDivisions = async () => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/division/divisions/${id}`, {
+          // change it with axios not fetch 
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/division/divisions/${Tournamentid}`, {
             headers: {
               Authorization: `Bearer ${auth?.api_token}`
             }
@@ -24,7 +25,7 @@ const DisplayDivisions = () => {
       };
 
     fetchDivisions();
-  }, [id, auth?.api_token]);
+  }, [Tournamentid, auth?.api_token]);
 
 
 

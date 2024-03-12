@@ -10,7 +10,7 @@ import { CreateAppModal } from '../../modals/create-app-stepper/CreateAppModal';
 type Props = {
 
   tournaments: any[];
-  refreshTournaments: () => void;
+
 
 
 
@@ -26,7 +26,7 @@ type Props = {
 
 
 
-const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) => {
+const TablesWidget11Admin: React.FC<Props> = ({ tournaments }) => {
 
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) =
                       className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
                     >
                       <KTIcon iconName='pencil' className='fs-3' />
-                      <CreateAppModal show={showCreateAppModal} handleClose={() => setShowCreateAppModal(false)}   tournamentId={selectedTournamentId} refreshTournaments={refreshTournaments}  onSuccessfulUpdate={resetSelectedTournamentId}/>
+                     
                     </a>
                     <a
                       href='#'
@@ -186,4 +186,4 @@ const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) =
   )
 }
 
-export { TablesWidget11 }
+export { TablesWidget11Admin}

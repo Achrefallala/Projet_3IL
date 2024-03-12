@@ -1,212 +1,121 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {useEffect, useRef} from 'react'
-import ApexCharts, {ApexOptions} from 'apexcharts'
-import {getCSS, getCSSVariableValue} from '../../../assets/ts/_utils'
-import {useThemeMode} from '../../layout/theme-mode/ThemeModeProvider'
+import React, { useEffect, useState, useRef } from 'react';
+import ApexCharts, { ApexOptions } from 'apexcharts';
+import axios from 'axios';
+import { useThemeMode } from '../../layout/theme-mode/ThemeModeProvider';
+import { getCSSVariableValue } from '../../../assets/ts/_utils';
 
 type Props = {
-  className: string
-}
+  className: string;
+};
 
-const ChartsWidget3: React.FC<Props> = ({className}) => {
-  const chartRef = useRef<HTMLDivElement | null>(null)
-  const {mode} = useThemeMode()
-  const refreshMode = () => {
-    if (!chartRef.current) {
-      return
-    }
-
-    const height = parseInt(getCSS(chartRef.current, 'height'))
-
-    const chart = new ApexCharts(chartRef.current, getChartOptions(height))
-    if (chart) {
-      chart.render()
-    }
-
-    return chart
-  }
+const ChartsWidget3: React.FC<Props> = ({ className }) => {
+  const chartRef = useRef<HTMLDivElement | null>(null);
+  const { mode } = useThemeMode();
+  const [chart, setChart] = useState<ApexCharts | null>(null);
 
   useEffect(() => {
-    const chart = refreshMode()
+    const fetchTournaments = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tournament/tournamentsAdmin`);
+        if (chartRef.current) {
+          const chartOptions = getChartOptions(chartRef.current.offsetHeight, response.data);
+          if (chart) {
+            chart.updateOptions(chartOptions);
+          } else {
+            const newChart = new ApexCharts(chartRef.current, chartOptions);
+            newChart.render();
+            setChart(newChart);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch tournaments:', error);
+      }
+    };
+
+    fetchTournaments();
 
     return () => {
       if (chart) {
-        chart.destroy()
+        chart.destroy();
       }
-    }
-  }, [chartRef, mode])
+    };
+  }, [mode]);
+
+  // Utilisez getCSSVariableValue pour récupérer les variables CSS si nécessaire
+  const getChartOptions = (height: number, tournaments: any[]): ApexOptions => {
+    const categories = tournaments.map((t: any) => t.tournamentName);
+    const divisionsData = tournaments.map(t => {
+      if (Array.isArray(t.divisions)) {
+        return t.divisions.reduce((total, divisionString) => {
+          const divisionCount = (divisionString.match(/,/g) || []).length + 1;
+          return total + divisionCount;
+        }, 0);
+      } else {
+        return 0;
+      }
+    });
+
+    // Adaptez les couleurs en fonction de celles utilisées dans ChartsWidget3
+    const baseColor = getCSSVariableValue('--bs-info'); // Ou toute autre couleur de votre choix
+    const borderColor = getCSSVariableValue('--bs-gray-200');
+    const labelColor = getCSSVariableValue('--bs-gray-500');
+
+    return {
+      series: [{
+        name: 'Divisions',
+        data: divisionsData,
+      }],
+      chart: {
+        type: 'line',
+        height: height,
+        toolbar: {
+          show: false,
+        },
+      },
+      stroke: {
+        curve: 'smooth',
+        show: true,
+        width: 3,
+        colors: [baseColor],
+      },
+      xaxis: {
+        categories: categories,
+        labels: {
+          style: {
+            colors: labelColor,
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: labelColor,
+          },
+        },
+      },
+      grid: {
+        borderColor: borderColor,
+        strokeDashArray: 4,
+      },
+      colors: [baseColor], // Appliquez la couleur de base aux lignes
+      markers: {
+        strokeColors: baseColor,
+        strokeWidth: 3,
+      },
+      // Ajoutez ici d'autres configurations de style si nécessaire
+    };
+  };
 
   return (
     <div className={`card ${className}`}>
-      {/* begin::Header */}
       <div className='card-header border-0 pt-5'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Recent Transactions</span>
-
-          <span className='text-muted fw-semibold fs-7'>More than 1000 new records</span>
-        </h3>
-
-        {/* begin::Toolbar */}
-        <div className='card-toolbar' data-kt-buttons='true'>
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary active px-4 me-1'
-            id='kt_charts_widget_3_year_btn'
-          >
-            Year
-          </a>
-
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary px-4 me-1'
-            id='kt_charts_widget_3_month_btn'
-          >
-            Month
-          </a>
-
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary px-4'
-            id='kt_charts_widget_3_week_btn'
-          >
-            Week
-          </a>
-        </div>
-        {/* end::Toolbar */}
+        {/* Entête du composant */}
       </div>
-      {/* end::Header */}
-
-      {/* begin::Body */}
       <div className='card-body'>
-        {/* begin::Chart */}
-        <div ref={chartRef} id='kt_charts_widget_3_chart' style={{height: '350px'}}></div>
-        {/* end::Chart */}
+        <div ref={chartRef} id='line_chart_widget' style={{ height: '350px' }}></div>
       </div>
-      {/* end::Body */}
     </div>
-  )
-}
+  );
+};
 
-export {ChartsWidget3}
-
-function getChartOptions(height: number): ApexOptions {
-  const labelColor = getCSSVariableValue('--bs-gray-500')
-  const borderColor = getCSSVariableValue('--bs-gray-200')
-  const baseColor = getCSSVariableValue('--bs-info')
-  const lightColor = getCSSVariableValue('--bs-info-light')
-
-  return {
-    series: [
-      {
-        name: 'Net Profit',
-        data: [30, 40, 40, 90, 90, 70, 70],
-      },
-    ],
-    chart: {
-      fontFamily: 'inherit',
-      type: 'area',
-      height: 350,
-      toolbar: {
-        show: false,
-      },
-    },
-    plotOptions: {},
-    legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    fill: {
-      type: 'solid',
-      opacity: 1,
-    },
-    stroke: {
-      curve: 'smooth',
-      show: true,
-      width: 3,
-      colors: [baseColor],
-    },
-    xaxis: {
-      categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: labelColor,
-          fontSize: '12px',
-        },
-      },
-      crosshairs: {
-        position: 'front',
-        stroke: {
-          color: baseColor,
-          width: 1,
-          dashArray: 3,
-        },
-      },
-      tooltip: {
-        enabled: true,
-        formatter: undefined,
-        offsetY: 0,
-        style: {
-          fontSize: '12px',
-        },
-      },
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: labelColor,
-          fontSize: '12px',
-        },
-      },
-    },
-    states: {
-      normal: {
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-      hover: {
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-      active: {
-        allowMultipleDataPointsSelection: false,
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-    },
-    tooltip: {
-      style: {
-        fontSize: '12px',
-      },
-      y: {
-        formatter: function (val) {
-          return '$' + val + ' thousands'
-        },
-      },
-    },
-    colors: [lightColor],
-    grid: {
-      borderColor: borderColor,
-      strokeDashArray: 4,
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-    },
-    markers: {
-      strokeColors: baseColor,
-      strokeWidth: 3,
-    },
-  }
-}
+export { ChartsWidget3 };
