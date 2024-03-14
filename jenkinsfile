@@ -1,24 +1,29 @@
-pipeline{
+pipeline {
   agent any
 
   stages {
-  
-  stage('Install dependencies') {
-      steps{
+    stage('Supprimer les dépendances existantes') {
+      steps {
+        script {
+          sh 'rm -rf node_modules'
+        }
+      }
+    }
 
-       script {
-	sh('npm install --legacy-peer-deps')
-       }
-     }
-   }
+    stage('Installer les dépendances') {
+      steps {
+        script {
+          sh 'npm install --legacy-peer-deps'
+        }
+      }
+    }
 
-  stage('Build application') {
-	steps{
-
-	  script {
-	   sh('npm start')
-	  }
- 	}
+    stage('Build application') {
+      steps {
+        script {
+          sh 'npm start'
+        }
       }
     }
   }
+}
