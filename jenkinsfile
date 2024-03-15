@@ -31,7 +31,7 @@ pipeline {
   stage('Installation eBuild') {
       steps {
         script {
-          sh 'npm install react-app-rewired-esbuild -D --legacy-peer-deps'
+          sh 'npm install react-app-rewired -D --legacy-peer-deps'
         }
       }
     }
