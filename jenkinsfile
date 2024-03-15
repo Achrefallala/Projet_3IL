@@ -17,13 +17,7 @@ pipeline {
         }
       }
     }
-  stage('Installation eBuild') {
-      steps {
-        script {
-          sh 'npm i react-app-rewired-esbuild -D'
-        }
-      }
-    }
+  
     stage('SonarQube Analysis') {
       steps{
         script {
@@ -33,7 +27,14 @@ pipeline {
                 }
               }
             }
-          }
+    }
+  stage('Installation eBuild') {
+      steps {
+        script {
+          sh 'npm i react-app-rewired-esbuild -D'
+        }
+      }
+    }
 
     stage('Build application') {
       steps {
