@@ -17,30 +17,40 @@ pipeline {
         }
       }
     }
-    stage('SonarQube Analysis') {
-      steps{
-        script {
-        def scannerHome = tool 'scanner'
-        withSonarQubeEnv {
-        sh "${scannerHome}/bin/sonar-scanner"  
-                }
-              }
-            }
-          }
 
-    stage('Build application') {
+    stage('Installation de Forever') {
+      steps {
+        script {
+          sh 'npm install -g forever'
+        }
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      steps {
+        script {
+          def scannerHome = tool 'scanner'
+          withSonarQubeEnv {
+            sh "${scannerHome}/bin/sonar-scanner"
+          }
+        }
+      }
+    }
+
+    stage('Démarrer l'application avec Forever') {
       steps {
         script {
           sh 'forever start `which npm` start'
         }
       }
     }
-    stage('Building images (node and mongo)') {
-      steps{
+
+    stage('Construction des images (node et mongo)') {
+      steps {
         script {
           sh('docker-compose build')
-          }
         }
       }
+    }
   }
 }
