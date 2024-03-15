@@ -20,7 +20,7 @@ pipeline {
   stage('Installation de Forever') {
       steps {
         script {
-          sh 'npm install -g forever'
+          sh 'sudo npm install -g forever'
         }
       }
     }
