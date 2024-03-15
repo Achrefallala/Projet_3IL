@@ -17,10 +17,10 @@ pipeline {
         }
       }
     }
-  stage('Installation de Forever') {
+  stage('Installation eBuild') {
       steps {
         script {
-          sh 'sudo npm install -g forever'
+          sh 'npm i react-app-rewired-esbuild -D'
         }
       }
     }
@@ -38,7 +38,7 @@ pipeline {
     stage('Build application') {
       steps {
         script {
-          sh 'forever start `which npm` start'
+          sh 'npx react-app-rewired start'
         }
       }
     }
