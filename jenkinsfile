@@ -31,8 +31,7 @@ pipeline {
     stage('Build application') {
       steps {
         script {
-          sh 'npm start --loglevel=verbose
-'
+          sh 'npm start --loglevel=verbose'
         }
       }
     }
