@@ -31,7 +31,7 @@ pipeline {
     stage('Build application') {
       steps {
         script {
-          sh 'npm start --loglevel=verbose'
+          sh 'forever start `which npm` start'
         }
       }
     }
