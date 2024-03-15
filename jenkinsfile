@@ -28,20 +28,19 @@ pipeline {
               }
             }
     }
- stage('Building images (node and mongo)') {
+    stage('Build application') {
+      steps {
+        script {
+          sh 'npm run build'
+        }
+      }
+    }
+   stage('Building images (node and mongo)') {
       steps{
         script {
           sh('docker-compose build')
           }
         }
       }
-    stage('Build application') {
-      steps {
-        script {
-          sh 'npm start'
-        }
-      }
     }
-
   }
-}
