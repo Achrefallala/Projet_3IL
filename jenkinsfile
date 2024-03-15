@@ -28,27 +28,13 @@ pipeline {
               }
             }
     }
-  stage('Installation eBuild') {
+    stage('Build application') {
       steps {
         script {
-          sh 'npm install react-app-rewired -D --legacy-peer-deps'
+          sh 'npm start'
         }
       }
     }
 
-    stage('Build application') {
-      steps {
-        script {
-          sh 'npx react-app-rewired start'
-        }
-      }
-    }
-    stage('Building images (node and mongo)') {
-      steps{
-        script {
-          sh('docker-compose build')
-          }
-        }
-      }
   }
 }
