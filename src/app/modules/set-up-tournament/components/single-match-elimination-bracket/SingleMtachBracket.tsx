@@ -1,4 +1,4 @@
-import { SingleEliminationBracket, Match, SVGViewer } from '@g-loot/react-tournament-brackets';
+//import { SingleEliminationBracket, Match, SVGViewer } from '@g-loot/react-tournament-brackets';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../../modules/auth';
@@ -168,6 +168,7 @@ const SingleMatchBracket = () => {
 
   return (
     <div>
+    {/** 
     <h1>Single Match Bracket</h1>
     {matches.length > 0 ? (
       <SingleEliminationBracket
@@ -181,7 +182,7 @@ const SingleMatchBracket = () => {
       />
     ) : (
       <div>Loading matches...</div>
-    )}
+    )} */}
   </div>
   );
 };

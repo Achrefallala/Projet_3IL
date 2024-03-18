@@ -6,7 +6,7 @@ import { useFormik } from 'formik';
 import { getUserByToken, login } from '../core/_requests';
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { useAuth } from '../core/Auth';
-import { GoogleLogin } from 'react-google-login';
+//import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
 import axios from 'axios';
 
@@ -139,14 +139,14 @@ export function Login() {
         <div className='col-md-6'>
           {/* begin::Google link */}
          <div id="signInButton">
-
+      {/** 
       <GoogleLogin
         clientId={clientId}
         buttonText="Login"
         onSuccess={onSuccess}
         onFailure={onFailure}
         cookiePolicy={'single_host_origin'}
-      />
+      /> */}
 
          </div>
           {/* end::Google link */}
