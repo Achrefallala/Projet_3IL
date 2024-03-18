@@ -45,7 +45,7 @@ const Step3Horizentale:FC<step3props> = ({ divisionId }) =>{
         };
 
         fetchTeams();
-        }, []);
+        }, [divisionId, auth?.api_token]);
 
 
 

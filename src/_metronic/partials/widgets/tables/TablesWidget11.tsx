@@ -47,7 +47,7 @@ const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) =
   
     try {
 
-      const response = await axios.delete(`http://localhost:3001/tournament/tournament/${identifiant}`);
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/tournament/tournament/${identifiant}`);
        if (!response.status) {
          throw new Error('Failed to delete the tournoi');
        }

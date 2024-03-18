@@ -6,8 +6,7 @@ import { useFormik } from 'formik';
 import { getUserByToken, login } from '../core/_requests';
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { useAuth } from '../core/Auth';
-import GoogleLogin from 'react-google-login';
-import { on } from 'events';
+import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
 import axios from 'axios';
 
@@ -36,7 +35,7 @@ const clientId = "430621675041-97e4t4mj4t67jv4ror7d733sbju6di8l.apps.googleuserc
 export function Login() {
   const [loading, setLoading] = useState(false);
   const { saveAuth, setCurrentUser } = useAuth();
-  const navigate = useNavigate(); // Now using useNavigate for redirection
+  
 
 
   const formik = useFormik({
@@ -158,7 +157,7 @@ export function Login() {
         <div className='col-md-6'>
           {/* begin::Google link */}
           <a
-            href='#'
+            href='/hello'
             className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
           >
             <img

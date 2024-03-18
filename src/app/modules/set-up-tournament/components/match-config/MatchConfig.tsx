@@ -7,6 +7,9 @@ import TextField from '@mui/material/TextField';
 import { toAbsoluteUrl } from "../../../../../_metronic/helpers";
 import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 interface Team {
     _id: string;
@@ -23,6 +26,8 @@ const MatchConfig = () => {
     const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeams, setSelectedTeams] = useState<{team1?: Team, team2?: Team}>({});
     const [numberTeams, setNumberTeams] = useState<number>(0);  
+    const navigate = useNavigate();
+
 
     const numberOfMatches = Math.floor(numberTeams / 2);
 
@@ -45,6 +50,8 @@ const MatchConfig = () => {
     };
 
     const handleSubmit = async (values: any) => {
+
+            const toastId = toast("Waiting...", { autoClose: false });
        
             const matches = values.matches.map((match: any, index: number) => {
                 return {
@@ -64,10 +71,21 @@ const MatchConfig = () => {
                     Authorization: `Bearer ${auth?.api_token}`
                 }
             }); 
-
+            toast.update(toastId, {
+                render: "Almost there! Finalizing your tournament details...",
+                type: 'success',
+                autoClose: 3000,
+                onClose: () => navigate('/dashboard') // replace '/your-next-page' with the path to your next page
+            });
             console.log('Matches created:', response.data);
         } catch (error) {
             console.error('Error creating matches:', error);
+            toast.update(toastId, {
+                render: "Error creating matches",
+                type: 'error',
+                autoClose: 3000,
+                onClose: () => navigate('/error-page') // replace '/error-page' with the path to your error page
+            });
         }
     }
 
@@ -90,7 +108,7 @@ const MatchConfig = () => {
         };
 
         fetchTeams();
-    }, []);
+    }, [auth?.api_token , id]);
 
     console.log(numberTeams)
 
@@ -106,6 +124,7 @@ const MatchConfig = () => {
 
     return (
         <div>
+             <ToastContainer />
             {/** header */}
             <div className="position-relative">
                 <img
@@ -263,6 +282,7 @@ const MatchConfig = () => {
         </Form>
             )}
         </Formik>
+        
         </div>
     );
 }
