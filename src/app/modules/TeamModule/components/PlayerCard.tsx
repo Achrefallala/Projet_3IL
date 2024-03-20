@@ -14,6 +14,15 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Cancel from '@mui/icons-material/Cancel';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import { useNavigate } from 'react-router-dom';
+import { deletePlayer } from '../../../../services/PlayerService';
+
+import { setSubtitutes } from "../../../../redux/slices/subtitutesSlice";
+import { useSelector } from 'react-redux';
+import { log } from 'console';
+
+import { selectSubtitute } from "../../../../redux/slices/subtitutesSlice";
+import { useAppDispatch } from '../../../../redux/hooks/UseAppDispatch';
+import Player from '../../../../models/Player';
 
 
 
@@ -21,6 +30,7 @@ function PlayerCard({ player }) {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -30,13 +40,26 @@ function PlayerCard({ player }) {
     };
 
     const [currentPlayer, setCurrentPlayer] = React.useState(null);
+    const subtitutes = useSelector((state: any) => state.subtitutes.subtitutes);
+    const dispatch = useAppDispatch();
 
     const navigate = useNavigate();
 
     const handleEditClick = (player: any) => {
         setCurrentPlayer(player);
-        navigate('editPlayer', { state: { player } });
+        dispatch(selectSubtitute(player));
+        // navigate('/metronic8/react/demo1/editPlayer', { state: { player } });
     };
+
+
+    const handleDelete = (id: string) => {
+        deletePlayer(id);
+        const subtitutesClone = subtitutes.filter((player: Player) => player._id !== id);
+        console.log("after delete ", subtitutes)
+        dispatch(setSubtitutes(subtitutesClone));
+    };
+
+
 
 
 
@@ -84,12 +107,10 @@ function PlayerCard({ player }) {
 
                 </MenuItem>
 
-                <MenuItem>
-
+                <MenuItem onMouseDown={() => handleDelete(player._id)}>
                     <ListItemIcon>
                         <DeleteForeverIcon fontSize="small" />
                     </ListItemIcon>
-
                     <ListItemText>Delete</ListItemText>
                 </MenuItem>
 

@@ -18,16 +18,14 @@ import {
 import SortableUser from "./SortableUser";
 import AddPlayerModal from "./AddPlayerModal"
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { fetchSubtitutes, setSubtitutes } from "../../../../redux/slices/subtitutesSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPlayers, setPlayers } from "../../../../redux/slices/playersSlice";
-import axios from "axios";
-// import { RootState } from "../../../../redux/store";
+import { getPlayers } from "../../../../services/PlayerService";
 
 
 
 
 const Team = () => {
-  console.log("here team with players")
 
 
   const [users, setUsers] = useState(() => {
@@ -37,45 +35,24 @@ const Team = () => {
     }
     return data;
   });
-
-
-
   const [activeId, setActiveId] = useState(null);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
 
 
-  const [subtitutes, setSubtitutes] = useState([]);
-  const subtitutes2 = useSelector((state) => state.players.players);
-
-  const fetchUsers = () => async dispatch => {
-    try {
-      const response = await axios.get('http://localhost:3001/player/get-players');
-      console.log(response.data.players);
-      const players = response.data.players;
-      // players.forEach(
-      //   player => {
-      //     player._id = player._id;
-      //     delete player._id;
-      //   })
-      setSubtitutes((prev) => [...prev, ...players]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  const subtitutes = useSelector((state) => state.subtitutes.subtitutes);
   const dispatch = useDispatch();
 
+
+
   useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchPlayers);
-    console.log("subtitutes2 ", subtitutes2)
+    dispatch(fetchSubtitutes());
   }, [dispatch]);
 
 
   const handleShowModal = () => setShowAddPlayer(true);
   const handleCloseModal = () => setShowAddPlayer(false);
 
-  const onDragEnd = (event) => {
+  const onDragEnd = async (event) => {
 
     const { active, over } = event;
     console.log("active id ", active, " over id ", over);
@@ -87,8 +64,8 @@ const Team = () => {
     const toUsers = users.find(user => user._id === over.id);
 
 
-    const fromSubtitutes = subtitutes2.players.find(user => user._id === active.id);
-    const toSubtitutes = subtitutes2.players.find(user => user._id === over.id);
+    const fromSubtitutes = subtitutes.find(user => user._id === active.id);
+    const toSubtitutes = subtitutes.find(user => user._id === over.id);
 
     console.log("fromUsers ", fromUsers)
     console.log("toUsers ", toUsers)
@@ -96,16 +73,23 @@ const Team = () => {
     console.log("toSubtitutes ", toSubtitutes)
 
     if (fromUsers && toUsers) {
+      console.log("here nigga");
       const oldIndex = users.findIndex((user) => user._id === active.id);
-      const newIndex = users.findIndex((user) => user._id === over.id);
+      const newIndex = users.findIndex((user) => {
 
-      if (newIndex && oldIndex) {
+        console.log(`user._id: ${user._id}  over.id: ${over.id} equal : ${over.id == user._id}`, user._id === over.id)
+        return user._id === over.id;
+      });
 
+      console.log("new index ", newIndex, " oldIndex ", oldIndex);
+      console.log("new and operator ", newIndex + 1 && oldIndex + 1);
 
+      if (newIndex + 1 && oldIndex + 1) {
 
         console.log("oldIndex ", oldIndex)
         console.log("newIndex ", newIndex)
 
+        console.log("subtitutes before ", subtitutes)
         setUsers((users) => {
 
           const arr = [...users]
@@ -115,36 +99,38 @@ const Team = () => {
           return arr
           //return arrayMove(users, oldIndex, newIndex);
         });
-      }
+      } else
+        console.log("something wrong nigga");
     }
     else if (fromSubtitutes && toSubtitutes) {
 
-      const oldIndex = subtitutes2.players.findIndex((user) => user._id === active.id);
-      const newIndex = subtitutes2.players.findIndex((user) => user._id === over.id);
+      const oldIndex = subtitutes.findIndex((user) => user._id === active.id);
+      const newIndex = subtitutes.findIndex((user) => user._id === over.id);
 
       console.log("oldIndex ", oldIndex)
       console.log("newIndex ", newIndex)
 
+      console.log("subtitutes before ", subtitutes)
+      const arr = [...subtitutes]
+      const temp = arr[oldIndex]
+      arr[oldIndex] = arr[newIndex]
+      arr[newIndex] = temp
+      console.log("subtitutes after swap ", subtitutes)
+      dispatch(setSubtitutes(arr));
 
-      setSubtitutes((subtitutes) => {
 
-        const arr = [...subtitutes2.players]
-        const temp = arr[oldIndex]
-        arr[oldIndex] = arr[newIndex]
-        arr[newIndex] = temp
-        return arr
-      });
-    } else if (fromUsers && toSubtitutes) {
+    }
+    else if (fromUsers && toSubtitutes) {
 
 
       const oldIndex = users.findIndex((user) => user._id === active.id);
-      const newIndex = subtitutes2.players.findIndex((user) => user._id === over.id);
+      const newIndex = subtitutes.findIndex((user) => user._id === over.id);
 
       console.log("oldIndex ", oldIndex)
       console.log("newIndex ", newIndex)
 
       const usersCopy = [...users]
-      const subtitutesCopy = [...subtitutes2.players]
+      const subtitutesCopy = [...subtitutes]
 
       const temp = usersCopy[oldIndex]
       usersCopy[oldIndex] = subtitutesCopy[newIndex]
@@ -152,49 +138,52 @@ const Team = () => {
 
       setUsers(usersCopy)
 
-      subtitutesCopy.sort((a, b) => {
-        if (a.playerNumber > 0 && b.playerNumber < 0) {
-          return -1;
-        } else if (a.playerNumber < 0 && b.playerNumber > 0) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
-      setSubtitutes(subtitutesCopy)
+      dispatch(
+        setSubtitutes(
+          sortSubtitutes(subtitutesCopy)
+        )
+      );
 
     }
     else if (fromSubtitutes && toUsers) {
 
       if (users.filter(u => u.avatar != null).length >= 11)
         return;
-      const oldIndex = subtitutes2.players.findIndex((user) => user._id === active.id);
+      const oldIndex = subtitutes.findIndex((user) => user._id === active.id);
       const newIndex = users.findIndex((user) => user._id === over.id);
 
       console.log("oldIndex ", oldIndex)
       console.log("newIndex ", newIndex)
 
       const usersCopy = [...users]
-      const subtitutesCopy = [...subtitutes2.players]
+      const subtitutesCopy = [...subtitutes]
 
       const temp = subtitutesCopy[oldIndex]
       subtitutesCopy[oldIndex] = usersCopy[newIndex]
       usersCopy[newIndex] = temp
 
       setUsers(usersCopy)
-      subtitutesCopy.sort((a, b) => {
-        if (a.playerNumber > 0 && b.playerNumber < 0) {
-          return -1;
-        } else if (a.playerNumber < 0 && b.playerNumber > 0) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-      setSubtitutes(subtitutesCopy)
+
+      dispatch(
+        setSubtitutes(
+          sortSubtitutes(subtitutesCopy)
+        )
+      );
     }
   };
+
+
+  const sortSubtitutes = (subtitutes) => {
+    return subtitutes.sort((a, b) => {
+      if (a.playerNumber > 0 && b.playerNumber < 0) {
+        return -1;
+      } else if (a.playerNumber < 0 && b.playerNumber > 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
 
 
 
@@ -218,6 +207,7 @@ const Team = () => {
       style={{
         height: "fit-content",
         width: "fit-content",
+        zIndex: "999 !important",
       }} >
 
       <DndContext
@@ -227,7 +217,8 @@ const Team = () => {
         onDragStart={handleDragStart}
       >
         <SortableContext
-          items={[...users, ...subtitutes2.players]}
+          items={[users]}
+          // items={[...users, ...subtitutes.subtitutes]}
           strategy={rectSwappingStrategy}
         >
           <Container>
@@ -236,7 +227,7 @@ const Team = () => {
               style={{
                 width: "1000px",
                 height: "1200px",
-                backgroundImage: "url('images/stadium.png')",
+                backgroundImage: "url('../../../images/stadium.png')",
                 backgroundSize: "cover", // Cover the entire div
                 backgroundPosition: "center",
                 display: "flex",
@@ -270,17 +261,21 @@ const Team = () => {
 
 
                   <Button className="col-12 my-3 glow-button" onClick={handleShowModal}>
+                    {/* <Button className="col-12 my-3 glow-button" onClick={async () => {
+                    dispatch(setSubtitutes([]));
+                  }}>*/}
                     Add player +
                   </Button>
 
 
                   <AddPlayerModal addPlayerToSubtitutes={() => console.log("added")} showAddPlayer={showAddPlayer} handleCloseModal={handleCloseModal} />
 
-
-                  {subtitutes2.players.map((subtitute) => (
+                  {Array.isArray(subtitutes) && subtitutes.length > 0 && subtitutes.map((subtitute) => (
                     // <h1 className="text-white" key={Math.random()}>{JSON.stringify(subtitute)}</h1>
                     <SortableUser key={subtitute._id} user={subtitute} type="subtitute" onClick={() => console.log("clicked")} />
                   ))}
+
+
                 </Col>
               </Row>
             </Container>

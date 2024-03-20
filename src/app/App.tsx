@@ -15,8 +15,7 @@ const App = () => {
           <ThemeModeProvider>
             <AuthInit>
               <Outlet />
-              <MasterInit />
-            
+              <MasterInit />       
             </AuthInit>
           </ThemeModeProvider>
       </I18nProvider>

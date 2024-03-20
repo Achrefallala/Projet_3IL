@@ -70,7 +70,6 @@ const SortableUser = ({ user, type }) => {
       <Col xs={type == "subtitute" ? 12 : 2}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-
         ref={setNodeRef}
         style={style}
         {...attributes}
@@ -82,7 +81,6 @@ const SortableUser = ({ user, type }) => {
         {
           user.avatar ? (
             <>
-
               <PLayerCard player={user} />
             </>
           ) : <div style={{

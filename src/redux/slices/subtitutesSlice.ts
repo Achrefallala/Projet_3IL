@@ -1,119 +1,112 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addPlayer, getPlayers } from "../../services/PlayerService";
+import { createSlice, PayloadAction, UnknownAction } from "@reduxjs/toolkit";
+import { getPlayers } from "../../services/PlayerService";
 import Player from "../../models/Player";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
 
-interface State {
-    subtitues: Player[];
-    selectedPlayer: Player | null;
-    errors: string;
+interface SubtitutesState {
+    subtitutes: Player[];
+    selectedSubtitute: Player | null;
+    errors: string | null;
 }
 
-let initialState: State = {
-    subtitues: [],
-    selectedPlayer: null,
+let initialState: SubtitutesState = {
+    subtitutes: [],
+    selectedSubtitute: null,
     errors: "",
 };
-const playerSlice = createSlice({
-    name: "players",
+
+const subtitutesSlice = createSlice({
+    name: "subtitutes",
     initialState,
     reducers: {
-        populatePlayers(state, action) {
-            state.subtitues = action.payload;
+        populatesubtitutes(state, action: PayloadAction<Player[]>) {
+            state.subtitutes = action.payload;
         },
-        selectPlayer(state, action) {
-            state.selectedPlayer = action.payload;
+        selectSubtitute(state, action: PayloadAction<Player>) {
+            state.selectedSubtitute = action.payload;
         },
-        unselectPlayer(state) {
-            state.selectedPlayer = null;
+        unselectSubtitute(state) {
+            state.selectedSubtitute = null;
         },
-        deletePlayerReducer: (state, action) => {
+        deleteSubtituteReducer: (state, action: PayloadAction<string>) => {
             const payload = action.payload;
-            state.subtitues = state.subtitues.filter(
-                (eventItem) => eventItem._id !== payload
+            state.subtitutes = state.subtitutes.filter(
+                (SubtituteItem) => SubtituteItem._id !== payload
             );
         },
-        updatePlayerReducer: (state, action) => {
+        updateSubtituteReducer: (state, action: PayloadAction<Player>) => {
             const payload = action.payload;
-            const index = state.subtitues.findIndex((item) =>
-                item._id === payload.id);
+            const index = state.subtitutes.findIndex((item) =>
+                item._id === payload._id);
             if (index !== -1) {
-                state.subtitues[index] = payload;
+                state.subtitutes[index] = payload;
             }
         },
-        addPlayerReducer: (state, action) => {
+        addSubtituteReducer: (state, action: PayloadAction<Player>) => {
             const payload = action.payload;
-            state.subtitues.push(payload);
+            state.subtitutes.push(payload);
         },
-        setErrors(state, action) {
+        setErrors(state, action: PayloadAction<string | null>) {
             state.errors = action.payload;
         },
     },
 });
 
-
-export const fetchPlayers = () => async (dispatch) => {
+export const fetchSubtitutes = () => async (dispatch: any) => {
     try {
-        const playersResult = await getPlayers();
-        dispatch(populatePlayers(playersResult.data));
+        const subtitutesResult = await getPlayers();
+        dispatch(populatesubtitutes(subtitutesResult.data.players));
         dispatch(setErrors(null));
-    } catch (error) {
+    } catch (error: any) {
         dispatch(setErrors(error));
     }
 };
 
-
-export const setPlayers = (players: [Player]) => async (dispatch) => {
+export const setSubtitutes = (players: Player[]) => async (dispatch: any) => {
     try {
-        dispatch(populatePlayers(players));
+        dispatch(populatesubtitutes(players));
         dispatch(setErrors(null));
-    } catch (error) {
+    } catch (error: any) {
         dispatch(setErrors(error));
     }
 };
 
-// export const addPlayer = (player: Player) => async (dispatch) => {
-//     try {
-//         dispatch(addPlayerReducer(player));
-//         dispatch(setErrors(null));
-//     } catch (error) {
-//         dispatch(setErrors(error));
-//     }
-// };
-
-
-export const addPlayerThunk = createAsyncThunk(
-    'player/add',
-    async (eventData: Player, { dispatch, rejectWithValue }) => {
-        try {
-            const response = await addPlayer(eventData); // Your API call to add an event
-            dispatch(addPlayerReducer(response.data));
-        } catch (error: any) {
-            return rejectWithValue(error.response.data);
-        }
+export const setSelectedSubtitute = (player: Player) => async (dispatch: any) => {
+    try {
+        dispatch(selectSubtitute(player));
+        dispatch(setErrors(null));
+    } catch (error: any) {
+        dispatch(setErrors(error));
     }
-);
+};
 
+export const addSubtitute = (player: Player) => async (dispatch: any) => {
+    try {
+        dispatch(addSubtituteReducer(player));
+        dispatch(setErrors(null));
+    } catch (error: any) {
+        dispatch(setErrors(error));
+    }
+};
 
-// export const deleteEventThunk = createAsyncThunk(
-//     'events/deleteEvent',
-//     async (eventId, { rejectWithValue }) => {
-//         try {
-//             // Replace this with the actual API call to delete the event
-//             await deleteEvent(eventId);
-//             return eventId; // Return the deleted event's ID on success
-//         } catch (error) {
-//             return rejectWithValue(error.response.data);
-//         }
-//     }
-// );
+export const selectsubtitutes = (state: any) => {
+    return [state.subtitutes.subtitutes, state.subtitutes.errors];
+};
+
+export const selectSelectedSubtitute = (state: any) => {
+    return state.subtitutes.selectedSubtitute;
+};
 
 export const {
-    populatePlayers,
-    selectPlayer,
-    unselectPlayer,
+    populatesubtitutes,
+    selectSubtitute,
+    unselectSubtitute,
     setErrors,
-    deletePlayerReducer,
-    updatePlayerReducer,
-    addPlayerReducer,
-} = playerSlice.actions;
-export default playerSlice.reducer;
+    deleteSubtituteReducer,
+    updateSubtituteReducer,
+    addSubtituteReducer,
+} = subtitutesSlice.actions;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export default subtitutesSlice.reducer;

@@ -10,10 +10,11 @@ export function updatePlayer(id: string, data: any) {
 }
 
 export function deletePlayer(id: string) {
-    return axios.delete(`/player/${id}`);
+    return axios.delete(`${process.env.REACT_APP_API_URL}/player/delete/${id}`);
 }
 
-export function addPlayer(data: Player) {
+
+export function addPlayer(data: any) {
     return axios.post(`${process.env.REACT_APP_API_URL}/player/add`, data);
 }
 

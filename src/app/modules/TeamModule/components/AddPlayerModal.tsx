@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import * as Yup from 'yup'
 import { ErrorMessage, Field, useFormikContext } from 'formik'
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 
@@ -13,10 +12,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import addPlayerThunk from '../../../../redux/slices/playersSlice';
-import { setPlayers } from '../../../../redux/slices/playersSlice';
-import { useDispatch } from 'react-redux';
 
+import { addSubtitute } from "../../../../redux/slices/subtitutesSlice";
+import { useAppDispatch } from '../../../../redux/hooks/UseAppDispatch';
+import { addPlayer } from '../../../../services/PlayerService';
+import Player from '../../../../models/Player';
+import { useSelector } from 'react-redux';
 
 const MAX_SIZE = 500000;
 
@@ -49,7 +50,9 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
 
     const [isHovered, setIsHovered] = useState(false);
 
-    const dispatch = useDispatch();
+    const selectedSubtitute = useSelector((state: any) => state.subtitutes.selectedSubtitute);
+
+    const dispatch = useAppDispatch();
 
     const [preview, setPreview] = useState<any>(null);
 
@@ -66,21 +69,34 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
         }
     };
 
-    const formik = useFormik<FormValues>({
-        initialValues: {
-            firstName: '',
-            lastName: '',
-            playerNumber: '20',
-            avatar: undefined,
-            phoneNumber: '',
-            age: '',
-            height: '',
-            email: '',
-            position: 'CF',
-            country: ''
-        },
-        onSubmit: async (values) => {
 
+    const formik = useFormik<FormValues>({
+        initialValues: selectedSubtitute != null ? {
+            firstName: selectedSubtitute.firstName,
+            lastName: selectedSubtitute.lastName,
+            playerNumber: selectedSubtitute.playerNumber,
+            avatar: selectedSubtitute.avatar,
+            phoneNumber: selectedSubtitute.phoneNumber,
+            age: selectedSubtitute.age,
+            height: selectedSubtitute.height,
+            email: selectedSubtitute.email,
+            position: selectedSubtitute.position,
+            country: selectedSubtitute.country
+        } :
+            {
+                firstName: '',
+                lastName: '',
+                playerNumber: '20',
+                avatar: undefined,
+                phoneNumber: '',
+                age: '',
+                height: '',
+                email: '',
+                position: 'CF',
+                country: ''
+            },
+
+        onSubmit: async (values) => {
             const formData = new FormData();
             formData.append('firstName', values.firstName);
             formData.append('lastName', values.lastName);
@@ -95,13 +111,20 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
             if (values.avatar) {
                 formData.append('avatar', values.avatar);
             }
-            console.log(values);
+            const player: Player = (await addPlayer(formData)).data.player;
+            dispatch(addSubtitute(player));
 
-
-
-            // use addPlayerThunk
-            dispatch(addPlayerThunk(formData,"player/add"));
         },
+        validationSchema: Yup.object({
+            // avatar: Yup.mixed().required('avatar')
+            //     .test("FILE_FORMAT", "file format is incorrect", (value: any) => value && ["image/png", "image/jpg", "image/jpeg"].includes(value!.type))
+            //     .test("FILE_SIZE", "file size is too large", (value: any) => value && value!.size <= 1024 * 1024),
+            firstName: Yup.string().required('First name is required'),
+            lastName: Yup.string().required('Last name is required'),
+            phoneNumber: Yup.string().required('Contact phone is required'),
+            email: Yup.string().email('Contact email is not valid').required('Contact email is required'),
+            country: Yup.string().required('Country is required'),
+        }),
 
         validate: validateImage,
     });
@@ -109,19 +132,9 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
 
 
 
-    const [loading, setLoading] = useState(false)
     // const formik = useFormik<IProfileDetails>({
     //     initialValues,
-    //     validationSchema: Yup.object({
-    //         // avatar: Yup.mixed().required('avatar')
-    //         //     .test("FILE_FORMAT", "file format is incorrect", (value: any) => value && ["image/png", "image/jpg", "image/jpeg"].includes(value!.type))
-    //         //     .test("FILE_SIZE", "file size is too large", (value: any) => value && value!.size <= 1024 * 1024),
-    //         fName: Yup.string().required('First name is required'),
-    //         lName: Yup.string().required('Last name is required'),
-    //         contactPhone: Yup.string().required('Contact phone is required'),
-    //         contactEmail: Yup.string().email('Contact email is not valid').required('Contact email is required'),
-    //         country: Yup.string().required('Country is required'),
-    //     }),
+
     //     onSubmit: async (values) => {
     //         setLoading(true)
     //         setTimeout(async () => {
@@ -146,6 +159,9 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
     //         }, 1000)
     //     },
     // })
+    const [loading, setLoading] = useState(false)
+
+
 
     return (
         <Modal show={showAddPlayer} onHide={handleCloseModal} size="xl">

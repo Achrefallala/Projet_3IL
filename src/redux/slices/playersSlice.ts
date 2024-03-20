@@ -3,22 +3,23 @@ import { addPlayer, getPlayers } from "../../services/PlayerService";
 import Player from "../../models/Player";
 
 interface State {
-    players: Player[];
+    data: Player[];
     selectedPlayer: Player | null;
     errors: string;
 }
 
 let initialState: State = {
-    players: [],
+    data: [],
     selectedPlayer: null,
     errors: "",
 };
+
 const playerSlice = createSlice({
     name: "players",
     initialState,
     reducers: {
         populatePlayers(state, action) {
-            state.players = action.payload;
+            state.data = action.payload;
         },
         selectPlayer(state, action) {
             state.selectedPlayer = action.payload;
@@ -28,21 +29,21 @@ const playerSlice = createSlice({
         },
         deletePlayerReducer: (state, action) => {
             const payload = action.payload;
-            state.players = state.players.filter(
+            state.data = state.data.filter(
                 (eventItem) => eventItem._id !== payload
             );
         },
         updatePlayerReducer: (state, action) => {
             const payload = action.payload;
-            const index = state.players.findIndex((item) =>
+            const index = state.data.findIndex((item) =>
                 item._id === payload.id);
             if (index !== -1) {
-                state.players[index] = payload;
+                state.data[index] = payload;
             }
         },
         addPlayerReducer: (state, action) => {
             const payload = action.payload;
-            state.players.push(payload);
+            state.data.push(payload);
         },
         setErrors(state, action) {
             state.errors = action.payload;
@@ -54,8 +55,9 @@ const playerSlice = createSlice({
 export const fetchPlayers = () => async (dispatch) => {
     try {
         const playersResult = await getPlayers();
-        dispatch(populatePlayers(playersResult.data));
-        dispatch(setErrors(null));
+        return playersResult.data.players;
+        // dispatch(populatePlayers(playersResult.data.players));
+        // dispatch(setErrors(null));
     } catch (error) {
         dispatch(setErrors(error));
     }

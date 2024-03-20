@@ -51,8 +51,6 @@ export function Login() {
         const { data: user } = await getUserByToken(auth.api_token);
         setCurrentUser(user);
 
-       
-
         setLoading(false);
       } catch (error:any) {
         console.error(error);
@@ -83,16 +81,12 @@ export function Login() {
       console.log('data googgle',data.api_token);
   
       if (data.api_token) {
-      
         localStorage.setItem('token', data.api_token);
         console.log(data.user);
+        console.log(data);
         saveAuth(data);
-        
-       
+      
         setCurrentUser(data.user);
-        
-  
-       
         alert(`Connexion réussie. Bienvenue ${data.user.name} !`);
        
       }
