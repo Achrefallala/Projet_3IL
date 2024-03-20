@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { KTIcon } from '../../../helpers';
-import { Link } from 'react-router-dom';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 
-// Supposons que Props soit déjà défini pour inclure Users comme un tableau d'objets utilisateur
 type User = {
   _id: string;
   first_name: string;
   last_name: string;
   email: string;
   role: string;
-  status:string;
+  status: string;
 };
 
 type Props = {
@@ -19,6 +19,9 @@ type Props = {
 
 const TablesWidget11AdminUsers: React.FC<Props> = ({ Users }) => {
   const [newUsers, setNewUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     setNewUsers([...Users]);
@@ -27,7 +30,6 @@ const TablesWidget11AdminUsers: React.FC<Props> = ({ Users }) => {
   const banUser = async (userId: string) => {
     try {
       await axios.put(`http://localhost:3001/user/ban/${userId}`);
-      
       setNewUsers(newUsers.map(user => user._id === userId ? { ...user, status: 'banned' } : user));
       alert('User banned successfully');
     } catch (error) {
@@ -38,7 +40,6 @@ const TablesWidget11AdminUsers: React.FC<Props> = ({ Users }) => {
   const unbanUser = async (userId: string) => {
     try {
       await axios.put(`http://localhost:3001/user/activate/${userId}`);
-    
       setNewUsers(newUsers.map(user => user._id === userId ? { ...user, status: 'active' } : user));
       alert('User unbanned successfully');
     } catch (error) {
@@ -46,9 +47,31 @@ const TablesWidget11AdminUsers: React.FC<Props> = ({ Users }) => {
     }
   };
 
+  const filteredUsers = newUsers.filter(user =>
+    (user.first_name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    user.last_name?.toLowerCase().includes(searchText.toLowerCase()))
+  );
+  
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
+
   return (
     <div className='me-10'>
       <div className='card-body py-3'>
+        <TextField
+          id="search-user"
+          label="Search User"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          onChange={(e) => setSearchText(e.target.value)}
+        />
         <div className='table-responsive'>
           <table className='table align-middle gs-0 gy-4'>
             <thead>
@@ -56,48 +79,61 @@ const TablesWidget11AdminUsers: React.FC<Props> = ({ Users }) => {
                 <th className='ps-4 min-w-325px rounded-start'>User</th>
                 <th className='min-w-125px'>Email</th>
                 <th className='min-w-125px'>Role</th>
-                <th className='min-w-125px'> Status </th>
+                <th className='min-w-125px'>Status</th>
                 <th className='min-w-200px text-end rounded-end'>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {newUsers.map((User, index) => (
+              {currentUsers.map((user, index) => (
                 <tr key={index}>
                   <td>
                     <div className='d-flex align-items-center'>
                       <div className='symbol symbol-50px me-5'>
                         {/* Placeholder for user image */}
-                        <img src='path_to_image' className='' alt='' />
+                        <span className='symbol-label bg-light-warning'>
+                          {user.first_name.charAt(0)}
+                        </span>
                       </div>
                       <div className='d-flex justify-content-start flex-column'>
                         <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                          {User.first_name} {User.last_name}
+                          {user.first_name} {user.last_name}
                         </a>
                         <span className='text-muted fw-semibold text-muted d-block fs-7'>
-                          {User.email}
+                          {user.email}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td><strong>{User.email}</strong></td>
+                  <td><strong>{user.email}</strong></td>
                   <td>
                     <span className='badge badge-light-primary fs-7 fw-semibold'>
-                      {User.role}
+                      {user.role}
                     </span>
                   </td>
                   <td>
-                    <span className='badge badge-light-primary fs-7 fw-semibold'>
-                      {User.status}
+                    <span className={`badge ${user.status === 'active' ? 'badge-light-success' : 'badge-light-danger'} fs-7 fw-semibold`}>
+                      {user.status}
                     </span>
                   </td>
                   <td className='text-end'>
-                    <button onClick={() => banUser(User._id)} className='btn btn-warning btn-sm me-2'>Ban</button>
-                    <button onClick={() => unbanUser(User._id)} className='btn btn-success btn-sm'>Unban</button>
+                    {user.status === 'active' ? (
+                      <button onClick={() => banUser(user._id)} className='btn btn-warning btn-sm me-2'>Ban</button>
+                    ) : (
+                      <button onClick={() => unbanUser(user._id)} className='btn btn-success btn-sm'>Unban</button>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <Stack spacing={2} justifyContent="center" alignItems="center">
+            <Pagination
+              count={Math.ceil(filteredUsers.length / usersPerPage)}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Stack>
         </div>
       </div>
     </div>
