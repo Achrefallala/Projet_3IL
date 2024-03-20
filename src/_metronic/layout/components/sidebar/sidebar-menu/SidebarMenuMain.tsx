@@ -21,6 +21,16 @@ const SidebarMenuMain = () => {
       <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' />
 
 
+     
+      <SidebarMenuItem to='/agent/Match' icon='switch' title='Match' fontIcon='bi-layers' />
+
+
+      {currentUser && currentUser.role === 'agent' &&(
+      <SidebarMenuItem to='/agent/MatchAgent' icon='switch' title='Affected Match' fontIcon='bi-layers' />
+      )}
+      
+
+
 
       {currentUser && currentUser.role === 'creator' &&(
       <SidebarMenuItem to='/tournament' icon='switch' title='tournament' fontIcon='bi-layers' />
@@ -54,7 +64,8 @@ const SidebarMenuMain = () => {
         >
           <SidebarMenuItem to='/AdminPage/alltournaments' title='All the Tournaments' hasBullet={true} />
           <SidebarMenuItem to='/AdminPage/Users' title='All Users' hasBullet={true} />
-    
+          <SidebarMenuItem to='/AdminPage/allteams' title='All Teams' hasBullet={true} />
+          <SidebarMenuItem to='/AdminPage/allmatchs' title='All Matches' hasBullet={true} />
         </SidebarMenuItemWithSub>
 
 )}

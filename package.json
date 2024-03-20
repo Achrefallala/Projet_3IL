@@ -13,6 +13,7 @@
     "@mui/material": "^5.15.11",
     "@mui/styled-engine-sc": "^6.0.0-alpha.16",
     "@popperjs/core": "^2.11.6",
+    "@react-oauth/google": "^0.12.1",
     "animate.css": "4.1.1",
     "apexcharts": "3.35.0",
     "axios": "^1.6.7",
@@ -33,7 +34,6 @@
     "react-bootstrap": "2.5.0-beta.1",
     "react-copy-to-clipboard": "5.1.0",
     "react-dom": "18.0.0",
-    "react-google-login": "^5.2.2",
     "react-inlinesvg": "3.0.0",
     "react-intl": "6.4.4",
     "react-query": "3.38.0",
@@ -43,6 +43,7 @@
     "react-topbar-progress-indicator": "4.1.1",
     "react-tournament-bracket": "^0.2.4",
     "socicon": "3.0.5",
+    "socket.io-client": "^4.7.4",
     "styled-components": "^6.1.8",
     "yup": "^1.0.0"
   },

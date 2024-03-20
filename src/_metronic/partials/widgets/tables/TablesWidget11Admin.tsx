@@ -1,189 +1,135 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React,{useState,useEffect} from 'react'
-import { KTIcon } from '../../../helpers'
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
-import { CreateAppModal } from '../../modals/create-app-stepper/CreateAppModal';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 
+// Définition du type pour les tournois
+type Tournament = {
+  _id: string;
+  tournamentName: string;
+  tournamentLogo: string;
+  tournamentSexe: string;
+  divisions: string;
+  tournamentStartDate: string;
+  tournamentEndDate: string;
+  status: string;
+};
 
 type Props = {
-
-  tournaments: any[];
-
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
+  tournaments: Tournament[];
+};
 
 const TablesWidget11Admin: React.FC<Props> = ({ tournaments }) => {
-
+  const [searchText, setSearchText] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const tournamentsPerPage = 5;
+  const [newTournaments, setNewTournaments] = useState<Tournament[]>([]);
 
   useEffect(() => {
-  
-    setNewTournaments([].concat(...Object.values(tournaments) as any));
-   
-  },[tournaments]);
+    setNewTournaments(tournaments);
+  }, [tournaments]);
 
-  const [newTournaments,setNewTournaments]= useState([].concat(...Object.values(tournaments)));
+  const handleDelete = async (tournamentId: string) => {
+    
+  };
 
-
-
-  const handleDelete = async (identifiant: string) => {
-
-    console.log("new tournaments here",newTournaments);
-  
-    setNewTournaments(prevTournaments => (prevTournaments as any).filter(t => t._id != identifiant))
-  
+  const handleApprove = async (tournamentId: string) => {
     try {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/tournament/tournamentstatus/${tournamentId}`, {
+        status: 'Approved',
+      });
 
-      const response = await axios.delete(`http://localhost:3001/tournament/tournament/${identifiant}`);
-       if (!response.status) {
-         throw new Error('Failed to delete the tournoi');
-       }
-     
+      if (response.status === 200) {
+        const updatedTournaments = newTournaments.map(tournament =>
+          tournament._id === tournamentId ? { ...tournament, status: 'Approved' } : tournament
+        );
+        setNewTournaments(updatedTournaments);
+        alert('Tournoi approuvé avec succès.');
+      }
     } catch (error) {
-      console.error('Failed to delete tournoi:', error);
+      console.error('Erreur lors de l’approbation du tournoi:', error);
+      alert('Erreur lors de l’approbation du tournoi.');
     }
   };
 
-  
-  const combinedTournaments = [].concat(...Object.values(tournaments));
+  const filteredTournaments = newTournaments.filter(tournament =>
+    tournament.tournamentName.toLowerCase().includes(searchText.toLowerCase())
+  );
 
-  const [showCreateAppModal, setShowCreateAppModal] = useState<boolean>(false)
+  const indexOfLastTournament = currentPage * tournamentsPerPage;
+  const indexOfFirstTournament = indexOfLastTournament - tournamentsPerPage;
+  const currentTournaments = filteredTournaments.slice(indexOfFirstTournament, indexOfLastTournament);
 
-
-  const [selectedTournamentId, setSelectedTournamentId] = useState(null);
-
-  const handleOpenModal = (id) => {
-   
-    if (!selectedTournamentId) {
-      setSelectedTournamentId(id);
-    }
-    setShowCreateAppModal(true);
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
   };
-  
-
-  const resetSelectedTournamentId = () => {
-    setSelectedTournamentId(null);
-  };
- 
 
   return (
     <div className='me-10'>
-      {/* begin::Header */}
-
-      {/* end::Header */}
-      {/* begin::Body */}
       <div className='card-body py-3'>
-        {/* begin::Table container */}
+        <TextField
+          id="search-tournament"
+          label="Search Tournament"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          onChange={(e) => setSearchText(e.target.value)}
+        />
         <div className='table-responsive'>
-          {/* begin::Table */}
           <table className='table align-middle gs-0 gy-4'>
-            {/* begin::Table head */}
             <thead>
               <tr className='fw-bold text-muted bg-light'>
-                <th className='ps-4 min-w-325px rounded-start'>Tournament</th>
-                <th className='min-w-125px'>Sexe</th>
-                <th className='min-w-125px'>Divisions</th>
-                <th className='min-w-125px'>Dates</th>
-                <th className='min-w-150px'>Status</th>
-                <th className='min-w-200px text-end rounded-end'>Actions</th>
-
-
+                <th>Tournament</th>
+                <th>Sexe</th>
+                <th>Divisions</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            {/* end::Table head */}
-            {/* begin::Table body */}
             <tbody>
-              {(newTournaments as any[]).map((tournament, index) => (
-              
-                <tr key={index}>
+              {currentTournaments.map((tournament) => (
+                <tr key={tournament._id}>
                   <td>
                     <div className='d-flex align-items-center'>
-                      <div className='symbol symbol-50px me-5'>
-                        <img
-                          src={`${process.env.REACT_APP_API_URL}/${tournament.tournamentLogo.replace(/\\/g, '/')}`}
-                          className=''
-                          alt=''
-                        />
-                      </div>
-                      <div className='d-flex justify-content-start flex-column'>
-                        <a
-                          href='#'
-                          className='text-dark fw-bold text-hover-primary mb-1 fs-6'
-                        >
-                          {tournament.tournamentName}
-                        </a>
-                        <span className='text-muted fw-semibold text-muted d-block fs-7'>
-                          {tournament.tournamentLevel}
-                        </span>
-                      </div>
+                      <img src={`${process.env.REACT_APP_API_URL}/${tournament.tournamentLogo}`} alt={tournament.tournamentName} style={{ width: '50px', height: '50px', marginRight: '10px' }} />
+                      {tournament.tournamentName}
                     </div>
                   </td>
+                  <td>{tournament.tournamentSexe}</td>
+                  <td>{tournament.divisions}</td>
                   <td>
-                    {tournament.tournamentSexe === 'male' ? (
-                      <i className='fas fa-male fs-3x me-5'></i>
-                    ) : tournament.tournamentSexe === 'female' ? (
-                      <i className='fas fa-female fs-3x me-5'></i>
-                    ) : null}
-                  </td>
-
-                  <td><strong>{tournament.divisions} </strong></td>
-                  <td>
-                    <strong>Start:</strong> {new Date(tournament.tournamentStartDate).toLocaleDateString()}<br />
-                    <strong>End:</strong> {new Date(tournament.tournamentEndDate).toLocaleDateString()}
+                    {new Date(tournament.tournamentStartDate).toLocaleDateString()} - 
+                    {new Date(tournament.tournamentEndDate).toLocaleDateString()}
                   </td>
                   <td>
-                    <span className='badge badge-light-primary fs-7 fw-semibold'>
+                    <span className={`badge ${tournament.status === 'Approved' ? 'badge-light-success' : 'badge-light-danger'}`}>
                       {tournament.status}
                     </span>
                   </td>
                   <td className='text-end'>
-                    <Link
-                      to={`/setuptournament/displaydivisions/${tournament._id}`}
-                      className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
-                    >
-                      <KTIcon iconName='switch' className='fs-3' />
-                    </Link>
-                    <a  onClick={() => handleOpenModal(tournament._id)}
-                      href='#'
-                      className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
-                    >
-                      <KTIcon iconName='pencil' className='fs-3' />
-                     
-                    </a>
-                    <a
-                      href='#'
-                      className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
-                    >
-                      <div onClick={()=>handleDelete(tournament._id)}>
-                        <KTIcon iconName='trash' className='fs-3' />
-                      </div>
-                    </a>
+               
+                    <Button variant="success" size="sm" className="ms-2" onClick={() => handleApprove(tournament._id)}>Approve</Button>
                   </td>
                 </tr>
               ))}
             </tbody>
-            {/* end::Table body */}
           </table>
-          {/* end::Table */}
         </div>
-        {/* end::Table container */}
+        <Stack spacing={2} justifyContent="center" alignItems="center">
+          <Pagination
+            count={Math.ceil(filteredTournaments.length / tournamentsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Stack>
       </div>
-      {/* begin::Body */}
     </div>
-  )
-}
+  );
+};
 
-export { TablesWidget11Admin}
+export { TablesWidget11Admin };
