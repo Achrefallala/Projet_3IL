@@ -9,7 +9,7 @@ type Props = {
 };
 
 const CardsWidget20 = ({ className, description, color, img }: Props) => {
-  // État pour stocker le nombre total de tournois
+  
   const [tournamentCount, setTournamentCount] = useState<number | null>(null);
   const safeTournamentCount = tournamentCount ?? 0;
 
