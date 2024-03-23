@@ -2,6 +2,8 @@ import {Route, Routes, Outlet} from 'react-router-dom'
 import TournamentPage from './components/TournamentPage';
 import DisplayDivisions from '../set-up-tournament/components/tournaments-divisions/displayDivisions';
 import UsersPage from './components/UsersPage';
+import TeamsPage from './components/TeamsPage';
+import MatchsPage from './components/MatchsPage';
 
 //import SetUpTournament from './components/my-tournaments/SetUpTournament';
 
@@ -39,6 +41,35 @@ const AdminPage=()=>(
                         }
                     />
 
+<Route
+                        path='allteams'
+                        element={
+                            <>
+                                <TeamsPage />
+                            </>
+                        }
+                    />
+
+
+
+<Route
+                        path='allteams'
+                        element={
+                            <>
+                                <TeamsPage />
+                            </>
+                        }
+                    />
+
+
+<Route
+                        path='allmatchs'
+                        element={
+                            <>
+                                <MatchsPage/>
+                            </>
+                        }
+                    />
 
 
                     
