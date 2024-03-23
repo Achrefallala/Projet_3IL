@@ -7,6 +7,8 @@ function TournamentConfig(){
 
     <Vertical/>
    
+    
+   
     </>)
 }
 

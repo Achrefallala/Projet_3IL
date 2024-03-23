@@ -1,31 +1,24 @@
 import * as Yup from 'yup';
-import Player from '../../../../models/Player';
 
 export interface ISetUpTournament {
-  tournamentType: string
-  PlayerPerTeam: number | null
-  ExtraTime: boolean
-  NumberTeams: number | null
-  MatchDuration: number | null
-  teams?: {
-    name: string,
-    logo: File | null,
-    location: string,
-    players: Player[],
-    subtitutes: any[]
-  }[]
-
-
+    tournamentType: string
+    PlayerPerTeam: number | null
+    ExtraTime: boolean
+    NumberTeams: number | null
+    MatchDuration: number | null
+    teams?: {name: string, logo: File | null  , location : string }[]
+    
+   
 }
 
 const initsSetUp: ISetUpTournament = {
-  tournamentType: 'singlematch',
-  PlayerPerTeam: null,
-  ExtraTime: false,
-  NumberTeams: null,
-  MatchDuration: null,
-  teams: [],
-
+    tournamentType: 'singlematch',
+    PlayerPerTeam: null,
+    ExtraTime:false,
+    NumberTeams:null,
+    MatchDuration: null,
+    teams: [],
+    
 
 }
 
@@ -57,8 +50,7 @@ const SetUpTournamentschemas = [
     Yup.object({
         
 
-
-  }),
+    }),
 
 ]
 

@@ -1,14 +1,14 @@
-import React, { FC, useEffect, useRef, useState } from 'react'
-import { Step1Horizentale } from './steps-tournamentset-up-horizentale/step1-horizentale'
-import { Step2Horizentale } from './steps-tournamentset-up-horizentale/step2-horizentale'
-import { Step3Horizentale } from './steps-tournamentset-up-horizentale/step3-horizentale'
-import { Step4Horizentale } from './steps-tournamentset-up-horizentale/step4-horizentale'
-import { Step5Horizentale } from './steps-tournamentset-up-horizentale/step5-horizentale'
-import { KTIcon } from '../../../../_metronic/helpers'
-import { StepperComponent } from '../../../../_metronic/assets/ts/components'
-import { Form, Formik, FormikValues } from 'formik'
+import React, {FC, useEffect, useRef, useState , } from 'react'
+import {Step1Horizentale} from './steps-tournamentset-up-horizentale/step1-horizentale'
+import {Step2Horizentale} from './steps-tournamentset-up-horizentale/step2-horizentale'
+import {Step3Horizentale} from './steps-tournamentset-up-horizentale/step3-horizentale'
+import {Step4Horizentale} from './steps-tournamentset-up-horizentale/step4-horizentale'
+import {Step5Horizentale} from './steps-tournamentset-up-horizentale/step5-horizentale'
+import {KTIcon} from '../../../../_metronic/helpers'
+import {StepperComponent} from '../../../../_metronic/assets/ts/components'
+import {Form, Formik, FormikValues} from 'formik'
 //import {SetUpTournamentschemas, ISetUpTournament, initsSetUp} from './CreateAccountWizardHelper'
-import { SetUpTournamentschemas, ISetUpTournament, initsSetUp } from './SetUpTournamentWizardHelper'
+import {SetUpTournamentschemas , ISetUpTournament , initsSetUp} from './SetUpTournamentWizardHelper'
 //import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +27,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
   const [currentSchema, setCurrentSchema] = useState(SetUpTournamentschemas[0])
   const [initValues] = useState<ISetUpTournament>(initsSetUp)
   const [isSubmitButton, setSubmitButton] = useState(false)
-
+ 
 
 
 
@@ -36,7 +36,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
   const navigate = useNavigate();
   console.log('division id dans compoenent horizentale id', divisionId);
   console.log('tournament id dans compoenent horizentale id', tournamentId);
-
+ 
   const loadStepper = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
   }
@@ -57,8 +57,8 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
     if (!stepper.current) {
       return;
     }
-
-
+    
+  
     if (stepper.current.currentStepIndex !== stepper.current.totalStepsNumber) {
       stepper.current.goNext();
     } else {
@@ -69,12 +69,11 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
           console.log('values is undefined');
           return;
         }
-
+        
         for (const key in values) {
           if (key === "teams" && Array.isArray(values[key])) {
-            const teams = values[key];
-
-            teams?.forEach((team, index) => {
+            const tteam = values[key];
+            tteam?.forEach((team, index) => {
               for (const teamKey in team) {
                 if (teamKey === 'logo' && team[teamKey] instanceof File) {
                   formData.append('images', team[teamKey] as File);
@@ -82,35 +81,32 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
                   formData.append(`teams[${index}][${teamKey}]`, team[teamKey]);
                 }
               }
-              console.log("formdata here", formData.values);
             });
           } else if (values[key] instanceof File) {
-            console.log("formdata here", formData.values);
             //images.push(values[key]);
           } else {
-            console.log("formdata here", formData.values);
             formData.append(key, values[key] as string);
           }
         }
-
+     
         const response = await axios.put(`${process.env.REACT_APP_API_URL}/division/division/${divisionId}`, formData);
-
-
+          
+       
         console.log('response', response);
         navigate(`/setuptournament/displaydivisions/${tournamentId}`);
       } catch (error) {
         console.log('error', error);
-
+        
       }
-
+  
       console.log('submit', values);
       stepper.current.goto(1);
       actions.resetForm();
       // navigate to display divisions
-
+      
 
     }
-
+  
     setSubmitButton(stepper.current.currentStepIndex === stepper.current.totalStepsNumber);
     setCurrentSchema(SetUpTournamentschemas[stepper.current.currentStepIndex - 1]);
   };
@@ -165,7 +161,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
                 </div>
 
                 <div data-kt-stepper-element='content'>
-                  <Step3Horizentale divisionId={divisionId} />
+                  <Step3Horizentale divisionId={divisionId}  />
                 </div>
 
                 <div data-kt-stepper-element='content'>
@@ -196,7 +192,7 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
                         {isSubmitButton && 'Submit'}
 
                         <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
-
+                        
                       </span>
                     </button>
                   </div>
@@ -210,4 +206,4 @@ const Horizontal: FC<HorizontalProps> = ({ divisionId, tournamentId }) => {
   )
 }
 
-export { Horizontal }
+export {Horizontal}

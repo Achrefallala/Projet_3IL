@@ -11,13 +11,15 @@ const App = () => {
   return (
     <Suspense fallback={<LayoutSplashScreen />}>
       <I18nProvider>
-        
+        <LayoutProvider>
           <ThemeModeProvider>
             <AuthInit>
               <Outlet />
-              <MasterInit />       
+              <MasterInit />
+            
             </AuthInit>
           </ThemeModeProvider>
+        </LayoutProvider>
       </I18nProvider>
     </Suspense>
   )
