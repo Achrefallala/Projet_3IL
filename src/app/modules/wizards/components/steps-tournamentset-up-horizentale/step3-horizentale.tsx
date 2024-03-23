@@ -6,12 +6,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import { useAuth } from '../../../auth';
-import { selectTeam, selectTeamReducer, useAppDispatch } from '../../../../../redux/slices/teamsSlice';
+import { useAppDispatch } from '../../../../../redux/slices/teamsSlice';
 import { addTeam, setPopulatedTeams } from '../../../../../redux/slices/teamsSlice';
-import { useSelector } from 'react-redux';
-
-
-
 
 
 type step3props = {
@@ -30,7 +26,6 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
     });
     const { auth } = useAuth();
     const [error, setError] = useState(true);
-    const selectedTeam = useSelector((state: any) => state.teams.selectTeam);
 
 
 
@@ -59,9 +54,7 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
 
         fetchTeams();
         dispatch(setPopulatedTeams([]));
-        dispatch(selectTeamReducer({ ...selectedTeam, players: [], subtitutes: [] }));
-        setFieldValue('teams', []);
-        console.log('values in step 3 ', values);
+
     }, []);
 
     const dispatch = useAppDispatch();
@@ -86,26 +79,6 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
             }
         }
     };
-
-    const handleRemoveTeam = (index) => {
-        let teamToRemove;
-        if (values && values.teams) {
-            teamToRemove = values.teams[index];
-        }
-        console.log("team to remove ", teamToRemove);
-        setFieldValue('teams', values.teams?.filter((_, i) => i !== index))
-        const teamsCopy = [...teams];
-
-        teamsCopy.filter((team) => team.name !== teamToRemove.name);
-        console.log("teams copy : ", teamsCopy);
-        dispatch(setPopulatedTeams(teamsCopy));
-    }
-
-    const resetPlayers = () => {
-        dispatch(setPopulatedTeams([]));
-        dispatch(selectTeamReducer({ ...selectedTeam, players: [], subtitutes: [] }));
-        setFieldValue('teams', []);
-    }
 
     return (
         <div className="container">
@@ -161,13 +134,8 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
                     <br />
                     <button type="button" className="btn btn-warning mt-2" onClick={handleAddTeam}><KTIcon iconName='plus' className='fs-3' />Add Team</button>
                 </div>
-                <div className="col-md-6">
-                    <h2><i className="fas fa-users "></i> Teams Added
-                        <button type="button" className="btn btn-light btn-active-light-primary btn-sm ms-auto" onClick={() => resetPlayers()}>
-                            <div className="text-danger" hidden={error}>{error}</div>
-                            <i className="fas fa-undo-alt fs-2x"></i>
-                        </button>
-                    </h2>
+                <div className="col-md-6 ">
+                    <h2><i className="fas fa-users "></i> Teams Added</h2>
                     {errors.teams && <div className="text-danger">{errors.teams}</div>}
                     <table className='table align-middle gs-0 gy-3 ms-10'>
                         <thead>
@@ -198,7 +166,7 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
                                     <td></td>
                                     <td className='text-end'>
 
-                                        <button type="button" className="btn btn-light btn-active-light-primary btn-sm" onClick={() => handleRemoveTeam(index)}>
+                                        <button type="button" className="btn btn-light btn-active-light-primary btn-sm" onClick={() => setFieldValue('teams', values.teams?.filter((_, i) => i !== index))}>
                                             <div className="text-danger" hidden={error}>{error}</div>
                                             <KTIcon iconName='trash' className='fs-3' />
                                         </button>

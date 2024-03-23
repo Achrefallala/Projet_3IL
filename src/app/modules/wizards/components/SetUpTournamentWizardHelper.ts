@@ -12,7 +12,7 @@ export interface ISetUpTournament {
     logo: File | null,
     location: string,
     players: Player[],
-    subtitutes: any[]
+    subtitutes: Player[]
   }[]
 
 

@@ -11,9 +11,10 @@ import Button from '@mui/material/Button';
 const Step4Horizentale: FC = () => {
 
     const [showTeamModal, setShowTeamModal] = useState(false);
-
+    
     const handleCloseModal = () => setShowTeamModal(false);
 
+    const teams = useSelector((state: any) => state.teams.teams);
 
 
 

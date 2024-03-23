@@ -32,6 +32,7 @@ const DisplayDivisions = () => {
 console.log('divisions', divisions);
 return (
     <>
+        
         < TablesWidget1 Divisions={divisions}/>
     </>
 );

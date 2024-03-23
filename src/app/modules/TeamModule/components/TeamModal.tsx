@@ -9,13 +9,13 @@ import { TransitionProps } from '@mui/material/transitions';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Avatar from '@mui/material/Avatar';
+import { red } from '@mui/material/colors';
 import { useSelector } from 'react-redux';
-import { selectTeam, setPopulatedTeams, useAppDispatch } from '../../../../redux/slices/teamsSlice';
-import { useEffect } from 'react';
-import { getTeams } from '../../../../services/TeamService';
-import { getPlayers } from '../../../../services/PlayerService';
+import { selectTeam, useAppDispatch } from '../../../../redux/slices/teamsSlice';
 
-
+// import "./Team.css";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -37,24 +37,9 @@ export default function TeamModal(props) {
 
     const dispatch = useAppDispatch();
 
-
     const handleSelectTeam = (team) => {
         dispatch(selectTeam(team));
     }
-
-    const fetchTeams = async () => {
-        const response = await getTeams();
-        const teams = response.data;
-        dispatch(setPopulatedTeams([]));
-        console.log("debug teams here ", teams);
-        console.log("debug selected team here ", selectedTeam);
-    };
-
-    useEffect(() => {
-        fetchTeams();
-    }, [])
-
-
 
     const modalStyle = {
         border: "#0ddc14 solid 2px",
@@ -70,13 +55,12 @@ export default function TeamModal(props) {
         >
             <DialogTitle>Choose a team to setup players</DialogTitle>
             <DialogContent>
-                {teams?.map((option: any, index) => (
+                {teams.map((option: any) => (
 
                     <Card
                         style={selectedTeam == option ? modalStyle : {}}
                         role="button"
                         onClick={() => handleSelectTeam(option)}
-                        key={index}
                         className="pe-auto my-3">
                         <CardHeader
                             title={"Team name: " + option.name}

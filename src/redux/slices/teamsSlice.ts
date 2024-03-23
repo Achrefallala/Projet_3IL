@@ -1,43 +1,16 @@
 import { createSlice, PayloadAction, UnknownAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
-import Team from "../../models/Team";
 
 interface TeamsState {
-    teams: Team[];
-    selectedTeam: Team | null;
+    teams: any[];
+    selectedTeam: any;
     errors: string | null;
 }
 
-// const data: any = [];
-
-// for (let i = 1; i < 27; i++) {
-
-
-//     data.push({
-//         _id: -i,
-//         playerNumber: -i,
-//         firstName: "blank",
-//         lastName: "blank",
-//         phoneNumber: "blank",
-//         email: "blank",
-//         age: 0,
-//         height: 0,
-//         country: "blank",
-//         position: "blank"
-//     });
-// }
-
 let initialState: TeamsState = {
     teams: [],
-    selectedTeam: {
-        _id: "",
-        name: "",
-        logo: null,
-        location: "",
-        players: [],
-        subtitutes: []
-    },
+    selectedTeam: null,
     errors: "",
 };
 
@@ -50,9 +23,7 @@ const teamsSlice = createSlice({
         },
         selectTeamReducer(state, action: PayloadAction<any>) {
             state.selectedTeam = action.payload;
-            
         },
-
         addTeamReducer(state, action: PayloadAction<any>) {
             state.teams.push(action.payload);
         },
