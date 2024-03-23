@@ -18,6 +18,8 @@ import { useAppDispatch } from '../../../../redux/hooks/UseAppDispatch';
 import { addPlayer } from '../../../../services/PlayerService';
 import Player from '../../../../models/Player';
 import { useSelector } from 'react-redux';
+import { setPopulatedTeams } from '../../../../redux/slices/teamsSlice';
+import { selectTeamReducer } from '../../../../redux/slices/teamsSlice';
 
 const MAX_SIZE = 500000;
 
@@ -44,22 +46,22 @@ interface FormValues {
 
 
 
+
 function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
 
-    const [position, setPosition] = useState('');
+    const teams = useSelector((state: any) => state.teams.teams);
+    const selectedTeam = useSelector((state: any) => state.teams.selectedTeam);
 
-    const [isHovered, setIsHovered] = useState(false);
+    const [position, setPosition] = useState('');
 
     const selectedSubtitute = useSelector((state: any) => state.subtitutes.selectedSubtitute);
 
     const dispatch = useAppDispatch();
 
-    const [preview, setPreview] = useState<any>(null);
 
     const handlePosition = (event: SelectChangeEvent) => {
         setPosition(event.target.value as string);
     };
-
 
     const MAX_SIZE = 500000; // 500KB
 
@@ -69,6 +71,55 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
         }
     };
 
+    function addPlayerToSelectedTeam(subtitute: Player) {
+
+        const teamsCopy = [...teams];
+        console.log("teams copy here :", teamsCopy);
+        dispatch(setPopulatedTeams(
+            teamsCopy.map((team: any) => {
+                const subtitutesCopy = [...team.subtitutes];
+                if (team.name === selectedTeam.name) {
+                    console.log('team verify here: ', team);
+                    console.log('team.subtitutes here: ', team.subtitutes);
+                    subtitutesCopy.push(subtitute);
+                    console.log('subtitutesCopy here: ', subtitutesCopy);
+                }
+
+                let data: any = [];
+
+                if (team && team?.players && team?.players?.length === 0) {
+
+                    for (let i = 1; i < 27; i++) {
+
+
+                        data.push({
+                            _id: -i,
+                            playerNumber: -i,
+                            firstName: "blank",
+                            lastName: "blank",
+                            phoneNumber: "blank",
+                            email: "blank",
+                            age: 0,
+                            height: 0,
+                            country: "blank",
+                            position: "blank"
+                        });
+                    }
+
+                } else {
+                    data = team.players;
+                }
+
+
+
+
+
+                return { ...team, subtitutes: subtitutesCopy, players: data };
+            })
+        ));
+
+        dispatch(selectTeamReducer({ ...selectedTeam, subtitutes: [...selectedTeam.subtitutes, subtitute] }));
+    }
 
     const formik = useFormik<FormValues>({
         initialValues: selectedSubtitute != null ? {
@@ -96,23 +147,25 @@ function AddPlayerModal({ showAddPlayer, handleCloseModal }) {
                 country: ''
             },
 
-        onSubmit: async (values) => {
-            const formData = new FormData();
-            formData.append('firstName', values.firstName);
-            formData.append('lastName', values.lastName);
-            formData.append('playerNumber', values.playerNumber);
-            formData.append('age', values.age);
-            formData.append('height', values.height);
-            formData.append('email', values.email);
-            formData.append('country', values.country);
-            formData.append('phoneNumber', values.phoneNumber);
-            formData.append('position', values.position);
+        onSubmit: async (formValues) => {
 
-            if (values.avatar) {
-                formData.append('avatar', values.avatar);
+
+            const formData = new FormData();
+            formData.append('firstName', formValues.firstName);
+            formData.append('lastName', formValues.lastName);
+            formData.append('playerNumber', formValues.playerNumber);
+            formData.append('age', formValues.age);
+            formData.append('height', formValues.height);
+            formData.append('email', formValues.email);
+            formData.append('country', formValues.country);
+            formData.append('phoneNumber', formValues.phoneNumber);
+            formData.append('position', formValues.position);
+
+            if (formValues.avatar) {
+                formData.append('avatar', formValues.avatar);
             }
             const player: Player = (await addPlayer(formData)).data.player;
-            dispatch(addSubtitute(player));
+            addPlayerToSelectedTeam(player);
 
         },
         validationSchema: Yup.object({

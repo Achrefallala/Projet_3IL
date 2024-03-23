@@ -1,14 +1,11 @@
 
 import React from 'react';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ContentPaste from '@mui/icons-material/ContentPaste';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Cancel from '@mui/icons-material/Cancel';
@@ -18,7 +15,6 @@ import { deletePlayer } from '../../../../services/PlayerService';
 
 import { setSubtitutes } from "../../../../redux/slices/subtitutesSlice";
 import { useSelector } from 'react-redux';
-import { log } from 'console';
 
 import { selectSubtitute } from "../../../../redux/slices/subtitutesSlice";
 import { useAppDispatch } from '../../../../redux/hooks/UseAppDispatch';
@@ -29,6 +25,8 @@ import Player from '../../../../models/Player';
 function PlayerCard({ player }) {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const selectedTeam = useSelector((state: any) => state.teams.selectedTeam);
+
     const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -60,11 +58,6 @@ function PlayerCard({ player }) {
     };
 
 
-
-
-
-
-    //console.log(`${process.env.REACT_APP_API_URL}/${player.avatar}`)
     return (
 
         <>
@@ -133,7 +126,6 @@ function PlayerCard({ player }) {
                     event.preventDefault();
                     handleClick(event);
                 }}
-                onMouseDown={() => console.log("mouse down")}
 
                 style={{
                     height: "fit-content",
@@ -147,7 +139,7 @@ function PlayerCard({ player }) {
                             <img className="img-fluid" src={`https://flagsapi.com/${player.country}/flat/64.png`} alt="country Flag" />
                         </div>
                         <div>
-                            <img className="img-fluid" src="https://selimdoyranli.com/cdn/fut-player-card/img/barcelona.svg" alt="Barcelona Logo" />
+                            <img className="img-fluid" src={selectedTeam.logo} alt="Barcelona Logo" />
                         </div>
                     </div>
                     <div className="col-8">

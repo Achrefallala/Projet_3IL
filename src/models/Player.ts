@@ -10,7 +10,6 @@ interface Player {
     email: string
     country: string
     position: string
-
 }
 
 export default Player;
