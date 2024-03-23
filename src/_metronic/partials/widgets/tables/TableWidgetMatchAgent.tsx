@@ -3,9 +3,13 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Button } from '@mui/material';
 import { useAuth } from '../../../../app/modules/auth';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 
 const socket = io('http://localhost:3002');
+const localizer = momentLocalizer(moment);
 
 type Match = {
   _id: string;
@@ -68,11 +72,33 @@ const TableWidgetMatchAgent: React.FC = () => {
 
     fetchMatch();
 
-    socket.on('scoreUpdated', (updatedMatch: Match) => {
+    socket.on('scoreUpdated', (updatedMatch) => {
       if (match && updatedMatch._id === match._id) {
-        setMatch(updatedMatch);
+        // Adapter la structure des données reçues pour correspondre à celle attendue par le front-end
+        const adaptedMatch = {
+          _id: updatedMatch._id,
+          team1: {
+            _id: match.team1._id, 
+            name: updatedMatch.team1Name,
+            logo: updatedMatch.team1Logo,
+          },
+          team2: {
+            _id: match.team2._id, 
+            name: updatedMatch.team2Name,
+            logo: updatedMatch.team2Logo,
+          },
+          division: {
+            _id: match.division._id, 
+            name: updatedMatch.divisionName,
+          },
+          time: updatedMatch.time,
+          scoreTeam1: updatedMatch.scoreTeam1,
+          scoreTeam2: updatedMatch.scoreTeam2,
+        };
+        setMatch(adaptedMatch);
       }
     });
+    
 
     socket.on('matchStatusUpdated', (statusData: { status: MatchStatus }) => {
       setMatchStatus(statusData.status);
@@ -91,9 +117,11 @@ const TableWidgetMatchAgent: React.FC = () => {
 
   const handleMatchStatusChange = (newStatus: MatchStatus) => {
     setMatchStatus(newStatus);
-    // S'assurer que l'ID du match est envoyé avec le statut pour identifier le match concerné
-    socket.emit('matchStatusChanged', { _id: match?._id, status: newStatus });
-  };
+    if (match && match._id) {
+        socket.emit('matchStatusChanged', { _id: match._id, status: newStatus });
+    }
+};
+
 
   const handleScoreUpdate = (team: 'team1' | 'team2') => {
     if (match) {
@@ -113,7 +141,7 @@ const TableWidgetMatchAgent: React.FC = () => {
       red: cardType === 'red' ? cardCounts.red + 1 : cardCounts.red,
     };
     setCardCounts(updatedCards);
-    // S'assurer que l'ID du match et les nouveaux nombres de cartons sont envoyés
+  
     socket.emit('cardUpdated', { _id: match?._id, ...updatedCards });
   };
 
@@ -121,37 +149,69 @@ const TableWidgetMatchAgent: React.FC = () => {
     return <div>No match found for this agent.</div>;
   }
 
+  const events = [{
+    title: `${match.team1.name} vs ${match.team2.name}`,
+    start: new Date(match.time),
+    end: new Date(match.time), 
+    allDay: false,
+  }];
+
   return (
     <div className="card mt-4" style={{
       boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.25)',
       borderRadius: '10px',
     }}>
       <div className="card-body">
-      <div className="row align-items-center">
-         <div className="col text-center">
-           <img src={`http://localhost:3001/${match.team1.logo}`}
-            alt={match.team1.name} style={{ width: '100px', height: '100px' }} />
-             <div className="mt-2"><strong>{match.team1.name}</strong></div>
-              <Button onClick={() => handleScoreUpdate('team1')}>+1 Team 1</Button> </div> <div className="col text-center"> <h5 className="card-title">VS</h5> <p className="card-text"><small className="text-muted">{match.division.name}</small></p> <p className="card-text">{new Date(match.time).toLocaleString()}</p> <p>Score: {match.scoreTeam1} - {match.scoreTeam2}</p> </div> <div className="col text-center"> <img src={`http://localhost:3001/${match.team2.logo}`} alt={match.team2.name} style={{ width: '100px', height: '100px' }} /> <div className="mt-2"><strong>{match.team2.name}</strong></div> <Button onClick={() => handleScoreUpdate('team2')}>+1 Team 2</Button> </div> </div>
-        <div>
-          <Button onClick={() => handleMatchStatusChange('En cours')} variant="contained" color="primary">
+        <div className="row align-items-center">
+          <div className="col text-center">
+            <img src={`http://localhost:3001/${match.team1?.logo}`} alt={match.team1.name} style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+            <div className="mt-2"><strong>{match.team1.name}</strong></div>
+            <Button onClick={() => handleScoreUpdate('team1')} style={{marginTop: '10px', background: 'green', color: 'white'}}>+1 Team 1</Button>
+          </div>
+          
+          <div className="col text-center">
+            <h5 className="card-title">VS</h5>
+            <p className="card-text"><small className="text-muted">{match.division.name}</small></p>
+            <p className="card-text">{new Date(match.time).toLocaleString()}</p>
+            <p style={{fontSize: '20px', fontWeight: 'bold'}}>Score: {match.scoreTeam1} - {match.scoreTeam2}</p>
+          </div>
+          
+          <div className="col text-center">
+            <img src={`http://localhost:3001/${match.team2?.logo}`} alt={match.team2.name} style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+            <div className="mt-2"><strong>{match.team2.name}</strong></div>
+            <Button onClick={() => handleScoreUpdate('team2')} style={{marginTop: '10px', background: 'blue', color: 'white'}}>+1 Team 2</Button>
+          </div>
+        </div>
+        
+        <div className="text-center" style={{marginTop: '20px'}}>
+          <Button onClick={() => handleMatchStatusChange('En cours')} variant="contained" style={{marginRight: '10px', background: '#007bff', color: 'white'}}>
             Début du Match
           </Button>
-          <Button onClick={() => handleMatchStatusChange('Terminé')} variant="contained" color="secondary">
+          <Button onClick={() => handleMatchStatusChange('Terminé')} variant="contained" style={{marginRight: '10px', background: '#dc3545', color: 'white'}}>
             Fin du Match
           </Button>
-          <Button onClick={() => handleCardUpdate('yellow')} variant="outlined" color="warning">
+          <Button onClick={() => handleCardUpdate('yellow')} variant="outlined" style={{marginRight: '10px', borderColor: '#ffc107', color: '#ffc107'}}>
             +1 Carton Jaune
           </Button>
-          <Button onClick={() => handleCardUpdate('red')} variant="outlined" color="error">
+          <Button onClick={() => handleCardUpdate('red')} variant="outlined" style={{borderColor: '#dc3545', color: '#dc3545'}}>
             +1 Carton Rouge
           </Button>
-          <p>Statut du match : {matchStatus}</p>
-          <p>Statut du match : {cardCounts.red}</p>
-          <p>Statut du match : {cardCounts.yellow}</p>
+          
+          <p style={{marginTop: '20px'}}>Statut du match : {matchStatus}</p>
+          <p>Cartons Rouges : {cardCounts.red}</p>
+          <p>Cartons Jaunes : {cardCounts.yellow}</p>
         </div>
       </div>
+      
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500, margin: '50px' }}
+      />
     </div>
+    
   );
 };
 

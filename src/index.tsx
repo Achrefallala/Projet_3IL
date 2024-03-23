@@ -15,6 +15,8 @@ import './_metronic/assets/sass/plugins.scss';
 import './_metronic/assets/sass/style.react.scss';
 import { AppRoutes } from './app/routing/AppRoutes';
 import { AuthProvider, setupAxios } from './app/modules/auth';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 
 setupAxios(axios);
 Chart.register(...registerables);

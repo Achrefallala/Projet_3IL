@@ -98,16 +98,12 @@ const DashboardPage: FC = () => {
 
     {/* begin::Row */}
     <div className='row gy-5 g-xl-8'>
-      <div className='col-xl-4'>
-        <ListsWidget2 className='card-xl-stretch mb-xl-8' />
+      <div className='col-xl-12'>
+        {currentUser && currentUser.role === 'agent' && (
+        <ListsWidget2 className='card-xl-stretch mb-xl-8' /> )}
       </div>
-      <div className='col-xl-4'>
-        <ListsWidget6 className='card-xl-stretch mb-xl-8' />
-      </div>
-      <div className='col-xl-4'>
-        <ListsWidget4 className='card-xl-stretch mb-5 mb-xl-8' items={5} />
-        {/* partials/widgets/lists/_widget-4', 'class' => 'card-xl-stretch mb-5 mb-xl-8', 'items' => '5' */}
-      </div>
+      
+      
     </div>
     {/* end::Row */}
 
