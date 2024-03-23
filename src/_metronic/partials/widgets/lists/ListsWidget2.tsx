@@ -1,125 +1,66 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react'
-import {KTIcon, toAbsoluteUrl} from '../../../helpers'
-import {Dropdown1} from '../../content/dropdown/Dropdown1'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const localizer = momentLocalizer(moment);
+
+
+type Event = {
+  title: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+};
 
 type Props = {
-  className: string
+  className: string;
 }
 
-const ListsWidget2: React.FC<Props> = ({className}) => {
+const ListsWidget2: React.FC<Props> = ({ className }) => {
+
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    const fetchMatch = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/user/agent/match');
+        const match = response.data;
+
+        // Adapter la réponse au format des événements attendu par react-big-calendar
+        const adaptedEvent: Event[] = [{
+          title: `${match.team1.name} vs ${match.team2.name}`,
+          start: new Date(match.time),
+          end: new Date(new Date(match.time).getTime() + 2 * 60 * 60 * 1000),
+          allDay: false,
+        }];
+
+        setEvents(adaptedEvent);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données du match:', error);
+      }
+    };
+
+    fetchMatch();
+  }, []);
+
   return (
     <div className={`card ${className}`}>
-      {/* begin::Header */}
-      <div className='card-header border-0'>
-        <h3 className='card-title fw-bold text-dark'>Authors</h3>
-        <div className='card-toolbar'>
-          {/* begin::Menu */}
-          <button
-            type='button'
-            className='btn btn-sm btn-icon btn-color-primary btn-active-light-primary'
-            data-kt-menu-trigger='click'
-            data-kt-menu-placement='bottom-end'
-            data-kt-menu-flip='top-end'
-          >
-            <KTIcon iconName='category' className='fs-2' />
-          </button>
-          <Dropdown1 />
-          {/* end::Menu */}
-        </div>
+      <div className="card-header">
+        <h3 className="card-title">Calendrier des Matchs</h3>
       </div>
-      {/* end::Header */}
-      {/* begin::Body */}
-      <div className='card-body pt-2'>
-        {/* begin::Item */}
-        <div className='d-flex align-items-center mb-7'>
-          {/* begin::Avatar */}
-          <div className='symbol symbol-50px me-5'>
-            <img src={toAbsoluteUrl('/media/avatars/300-6.jpg')} className='' alt='' />
-          </div>
-          {/* end::Avatar */}
-          {/* begin::Text */}
-          <div className='flex-grow-1'>
-            <a href='#' className='text-dark fw-bold text-hover-primary fs-6'>
-              Emma Smith
-            </a>
-            <span className='text-muted d-block fw-semibold'>Project Manager</span>
-          </div>
-          {/* end::Text */}
-        </div>
-        {/* end::Item */}
-        {/* begin::Item */}
-        <div className='d-flex align-items-center mb-7'>
-          {/* begin::Avatar */}
-          <div className='symbol symbol-50px me-5'>
-            <img src={toAbsoluteUrl('/media/avatars/300-5.jpg')} className='' alt='' />
-          </div>
-          {/* end::Avatar */}
-          {/* begin::Text */}
-          <div className='flex-grow-1'>
-            <a href='#' className='text-dark fw-bold text-hover-primary fs-6'>
-              Sean Bean
-            </a>
-            <span className='text-muted d-block fw-semibold'>PHP, SQLite, Artisan CLI</span>
-          </div>
-          {/* end::Text */}
-        </div>
-        {/* end::Item */}
-        {/* begin::Item */}
-        <div className='d-flex align-items-center mb-7'>
-          {/* begin::Avatar */}
-          <div className='symbol symbol-50px me-5'>
-            <img src={toAbsoluteUrl('/media/avatars/300-11.jpg')} className='' alt='' />
-          </div>
-          {/* end::Avatar */}
-          {/* begin::Text */}
-          <div className='flex-grow-1'>
-            <a href='#' className='text-dark fw-bold text-hover-primary fs-6'>
-              Brian Cox
-            </a>
-            <span className='text-muted d-block fw-semibold'>PHP, SQLite, Artisan CLI</span>
-          </div>
-          {/* end::Text */}
-        </div>
-        {/* end::Item */}
-        {/* begin::Item */}
-        <div className='d-flex align-items-center mb-7'>
-          {/* begin::Avatar */}
-          <div className='symbol symbol-50px me-5'>
-            <img src={toAbsoluteUrl('/media/avatars/300-9.jpg')} className='' alt='' />
-          </div>
-          {/* end::Avatar */}
-          {/* begin::Text */}
-          <div className='flex-grow-1'>
-            <a href='#' className='text-dark fw-bold text-hover-primary fs-6'>
-              Francis Mitcham
-            </a>
-            <span className='text-muted d-block fw-semibold'>PHP, SQLite, Artisan CLI</span>
-          </div>
-          {/* end::Text */}
-        </div>
-        {/* end::Item */}
-        {/* begin::Item */}
-        <div className='d-flex align-items-center'>
-          {/* begin::Avatar */}
-          <div className='symbol symbol-50px me-5'>
-            <img src={toAbsoluteUrl('/media/avatars/300-23.jpg')} className='' alt='' />
-          </div>
-          {/* end::Avatar */}
-          {/* begin::Text */}
-          <div className='flex-grow-1'>
-            <a href='#' className='text-dark fw-bold text-hover-primary fs-6'>
-              Dan Wilson
-            </a>
-            <span className='text-muted d-block fw-semibold'>PHP, SQLite, Artisan CLI</span>
-          </div>
-          {/* end::Text */}
-        </div>
-        {/* end::Item */}
+      <div className="card-body">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 600 }}
+        />
       </div>
-      {/* end::Body */}
     </div>
-  )
+  );
 }
 
-export {ListsWidget2}
+export { ListsWidget2 };

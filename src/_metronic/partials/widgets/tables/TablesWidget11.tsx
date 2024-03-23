@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { CreateAppModal } from '../../modals/create-app-stepper/CreateAppModal';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 
 
 }
+
 
 
 
@@ -76,6 +78,44 @@ const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) =
 
   const resetSelectedTournamentId = () => {
     setSelectedTournamentId(null);
+  };
+
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = (id) => {
+    if (!selectedTournamentId) {
+      setSelectedTournamentId(id);
+    }
+    setOpen(true);
+    console.log(id);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedTournamentId(null);
+  };
+
+
+
+  const handleSubmitComment = async (comment: string, tournamentId: string) => {
+    try {
+      const response = await axios.put(`http://localhost:3001/tournament/addcomment/${tournamentId}`, {
+        comment,
+      });
+
+      if (response.status === 200) {
+        console.log('Comment added successfully:', response.data);
+        // Optionally refresh tournaments list or show success message
+        refreshTournaments(); // If you have a function to refresh the tournaments list
+        handleClose(); // Close the dialog
+      } else {
+        throw new Error('Failed to add the comment.');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      // Optionally handle error (e.g., show error message)
+    }
   };
  
 
@@ -171,6 +211,55 @@ const TablesWidget11: React.FC<Props> = ({ tournaments , refreshTournaments }) =
                         <KTIcon iconName='trash' className='fs-3' />
                       </div>
                     </a>
+
+                    <a
+                      href='#'
+                      className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
+                    >
+                      
+      <div onClick={() => handleClickOpen(tournament._id)}>
+        <KTIcon iconName='trash' className='fs-3' />
+      </div>
+      <Dialog
+      open={open}
+      onClose={handleClose}
+      PaperProps={{
+        component: 'form',
+        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const comment = formData.get('comment') as string; 
+
+          if (selectedTournamentId && comment) {
+            handleSubmitComment(comment, selectedTournamentId);
+          }
+        },
+      }}
+    >
+      <DialogTitle>Comments</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          You can leave a comment for this tournament to see if you are interested in participating
+        </DialogContentText>
+        <TextField
+          autoFocus
+          required
+          margin="dense"
+          id="comment" // Ensure this matches the 'name' attribute
+          name="comment"
+          label="Comment"
+          type="text"
+          fullWidth
+          variant="standard"
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button type="submit">Submit Comment</Button>
+      </DialogActions>
+    </Dialog>
+                    </a>
+
                   </td>
                 </tr>
               ))}

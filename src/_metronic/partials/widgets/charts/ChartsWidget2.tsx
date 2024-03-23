@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import ApexCharts, { ApexOptions } from 'apexcharts';
 import axios from 'axios';
 import { useThemeMode } from '../../layout/theme-mode/ThemeModeProvider';
-import { Dropdown1 } from '../../content/dropdown/Dropdown1';
-import { KTIcon } from '../../../helpers';
 
 type Props = {
   className: string;
@@ -15,9 +13,9 @@ const ChartsWidget2: React.FC<Props> = ({ className }) => {
   const [chart, setChart] = useState<ApexCharts | null>(null);
 
   useEffect(() => {
-    const fetchTournaments = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tournament/tournamentsAdmin`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/users`);
         if (chartRef.current) {
           const chartOptions = getChartOptions(chartRef.current.offsetHeight, response.data);
           if (chart) {
@@ -29,11 +27,11 @@ const ChartsWidget2: React.FC<Props> = ({ className }) => {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch tournaments:', error);
+        console.error('Failed to fetch users:', error);
       }
     };
 
-    fetchTournaments();
+    fetchUsers();
 
     return () => {
       if (chart) {
@@ -42,25 +40,22 @@ const ChartsWidget2: React.FC<Props> = ({ className }) => {
     };
   }, [mode]); 
 
-  const getChartOptions = (height: number, tournaments: any[]): ApexOptions => {
-    const labels = tournaments.map((t: any) => t.tournamentName);
-    const series = tournaments.map(t => {
-      if (Array.isArray(t.divisions)) {
-        return t.divisions.reduce((total, divisionString) => {
-          const divisionCount = (divisionString.match(/,/g) || []).length + 1;
-          return total + divisionCount;
-        }, 0);
-      } else {
-        return 0;
-      }
-    });
+  const getChartOptions = (height: number, users: any[]): ApexOptions => {
+   
+    const rolesCount = users.reduce((acc, user) => {
+      acc[user.role] = (acc[user.role] || 0) + 1;
+      return acc;
+    }, {});
+
+    const labels = Object.keys(rolesCount);
+    const series = Object.values(rolesCount);
 
     return {
       chart: {
         type: 'pie',
         height: height
       },
-      series: series,
+      series: series as ApexAxisChartSeries,
       labels: labels,
       responsive: [{
         breakpoint: 480,
@@ -80,24 +75,12 @@ const ChartsWidget2: React.FC<Props> = ({ className }) => {
     <div className={`card ${className}`}>
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Recent Statistics</span>
-          <span className='text-muted fw-semibold fs-7'>More than 400 new members</span>
+          <span className='card-label fw-bold fs-3 mb-1'>User Roles Distribution</span>
+          <span className='text-muted fw-semibold fs-7'>Overview of user roles</span>
         </h3>
-        <div className='card-toolbar'>
-          <button
-            type='button'
-            className='btn btn-sm btn-icon btn-color-primary btn-active-light-primary'
-            data-kt-menu-trigger='click'
-            data-kt-menu-placement='bottom-end'
-            data-kt-menu-flip='top-end'
-          >
-            <KTIcon iconName='category' className='fs-2' />
-          </button>
-          <Dropdown1 />
-        </div>
       </div>
       <div className='card-body'>
-        <div ref={chartRef} id='kt_charts_widget_1_chart' style={{ height: '350px' }} />
+        <div ref={chartRef} id='kt_charts_widget_2_chart' style={{ height: '350px' }} />
       </div>
     </div>
   );

@@ -16,44 +16,53 @@ import {
   CardsWidget20,
   ListsWidget26,
   EngageWidget10,
+  ChartsWidget1,
+  ChartsWidget2,
+  ChartsWidget3,
 } from '../../../_metronic/partials/widgets'
+import { useAuth } from '../../modules/auth'
 
-const DashboardPage: FC = () => (
+
+
+const DashboardPage: FC = () => {
+  
+  const { currentUser } = useAuth();
+
+  return(
   <>
     {/* begin::Row */}
     <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget20 
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Active Projects'
-          color='#F1416C'
-          img={toAbsoluteUrl('/media/patterns/vector-1.png')}
-        />
-        <CardsWidget7
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Professionals'
-          icon={false}
-          stats={357}
-          labelColor='dark'
-          textColor='gray-300'
-        />
-      </div>
-      {/* end::Col */}
+  
+  <div className='col-md-4 col-lg-4 col-xl-4 mb-md-5 mb-xl-10'>
+    {currentUser && currentUser.role === 'admin' && (
+      <CardsWidget20 
+        className='card-xl-stretch mb-xl-8'
+        description='Active Tournaments'
+        color='#F1416C'
+        img={toAbsoluteUrl('/media/patterns/vector-1.png')}
+      />
+    )}
+  </div>
 
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget17 className='h-md-50 mb-5 mb-xl-10' />
-        <ListsWidget26 className='h-lg-50' />
-      </div>
-      {/* end::Col */}
+  
+  <div className='col-md-4 col-lg-4 col-xl-4 mb-md-5 mb-xl-10'>
+  {currentUser && currentUser.role === 'admin' && (
+    <MixedWidget8
+      className='card-xxl-stretch mb-xl-3'
+      chartColor='success'
+      chartHeight='150px'
+    /> )}
+  </div>
 
-      {/* begin::Col */}
-      <div className='col-xxl-6'>
-        <EngageWidget10 className='h-md-100' />
-      </div>
-      {/* end::Col */}
-    </div>
+  
+  <div className='col-md-4 col-lg-4 col-xl-4 mb-md-5 mb-xl-10'>
+  {currentUser && currentUser.role === 'admin' && (
+    <ChartsWidget1 className='card-xl-stretch mb-xl-8' />
+  )}
+  </div>
+</div>
+
+
     {/* end::Row */}
 
     {/* begin::Row */}
@@ -75,26 +84,26 @@ const DashboardPage: FC = () => (
     {/* begin::Row */}
     <div className='row gy-5 gx-xl-8'>
       <div className='col-xxl-4'>
-        <ListsWidget3 className='card-xxl-stretch mb-xl-3' />
+      {currentUser && currentUser.role === 'admin' && (
+      <ChartsWidget2 className='card-xl-stretch mb-5 mb-xl-8' />
+      )}
       </div>
       <div className='col-xl-8'>
-        <TablesWidget10 className='card-xxl-stretch mb-5 mb-xl-8' />
+      {currentUser && currentUser.role === 'admin' && (
+      <ChartsWidget3 className='card-xl-stretch mb-xl-8' />
+      )}
       </div>
     </div>
     {/* end::Row */}
 
     {/* begin::Row */}
     <div className='row gy-5 g-xl-8'>
-      <div className='col-xl-4'>
-        <ListsWidget2 className='card-xl-stretch mb-xl-8' />
+      <div className='col-xl-12'>
+        {currentUser && currentUser.role === 'agent' && (
+        <ListsWidget2 className='card-xl-stretch mb-xl-8' /> )}
       </div>
-      <div className='col-xl-4'>
-        <ListsWidget6 className='card-xl-stretch mb-xl-8' />
-      </div>
-      <div className='col-xl-4'>
-        <ListsWidget4 className='card-xl-stretch mb-5 mb-xl-8' items={5} />
-        {/* partials/widgets/lists/_widget-4', 'class' => 'card-xl-stretch mb-5 mb-xl-8', 'items' => '5' */}
-      </div>
+      
+      
     </div>
     {/* end::Row */}
 
@@ -111,7 +120,8 @@ const DashboardPage: FC = () => (
       </div>
     </div>
   </>
-)
+  );
+}
 
 const DashboardWrapper: FC = () => {
   const intl = useIntl()

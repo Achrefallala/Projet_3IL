@@ -3,6 +3,8 @@ import ApexCharts, { ApexOptions } from 'apexcharts';
 import axios from 'axios';
 import { useThemeMode } from '../../layout/theme-mode/ThemeModeProvider';
 import { getCSSVariableValue } from '../../../assets/ts/_utils';
+import { Dropdown1 } from '../../content/dropdown/Dropdown1';
+import { KTIcon } from '../../../helpers';
 
 type Props = {
   className: string;
@@ -14,9 +16,10 @@ const ChartsWidget3: React.FC<Props> = ({ className }) => {
   const [chart, setChart] = useState<ApexCharts | null>(null);
 
   useEffect(() => {
-    const fetchTournaments = async () => {
+    const fetchDivisions = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tournament/tournamentsAdmin`);
+      
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/division/divisionsAdmin`);
         if (chartRef.current) {
           const chartOptions = getChartOptions(chartRef.current.offsetHeight, response.data);
           if (chart) {
@@ -28,11 +31,11 @@ const ChartsWidget3: React.FC<Props> = ({ className }) => {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch tournaments:', error);
+        console.error('Failed to fetch divisions:', error);
       }
     };
 
-    fetchTournaments();
+    fetchDivisions();
 
     return () => {
       if (chart) {
@@ -41,29 +44,20 @@ const ChartsWidget3: React.FC<Props> = ({ className }) => {
     };
   }, [mode]);
 
-  // Utilisez getCSSVariableValue pour récupérer les variables CSS si nécessaire
-  const getChartOptions = (height: number, tournaments: any[]): ApexOptions => {
-    const categories = tournaments.map((t: any) => t.tournamentName);
-    const divisionsData = tournaments.map(t => {
-      if (Array.isArray(t.divisions)) {
-        return t.divisions.reduce((total, divisionString) => {
-          const divisionCount = (divisionString.match(/,/g) || []).length + 1;
-          return total + divisionCount;
-        }, 0);
-      } else {
-        return 0;
-      }
-    });
+  const getChartOptions = (height: number, divisions: any[]): ApexOptions => {
+    const categories = divisions.map((division: any) => division.name);
 
-    // Adaptez les couleurs en fonction de celles utilisées dans ChartsWidget3
-    const baseColor = getCSSVariableValue('--bs-info'); // Ou toute autre couleur de votre choix
+    const seriesData = divisions.map(division => division.teams.length);
+
+    
+    const baseColor = getCSSVariableValue('--bs-info'); 
     const borderColor = getCSSVariableValue('--bs-gray-200');
     const labelColor = getCSSVariableValue('--bs-gray-500');
 
     return {
       series: [{
-        name: 'Divisions',
-        data: divisionsData,
+        name: 'Teams',
+        data: seriesData,
       }],
       chart: {
         type: 'line',
@@ -97,17 +91,35 @@ const ChartsWidget3: React.FC<Props> = ({ className }) => {
         borderColor: borderColor,
         strokeDashArray: 4,
       },
-      colors: [baseColor], // Appliquez la couleur de base aux lignes
+      colors: [baseColor],
       markers: {
         strokeColors: baseColor,
         strokeWidth: 3,
       },
-      // Ajoutez ici d'autres configurations de style si nécessaire
+   
     };
   };
 
   return (
     <div className={`card ${className}`}>
+      <div className='card-header border-0 pt-5'>
+        <h3 className='card-title align-items-start flex-column'>
+          <span className='card-label fw-bold fs-3 mb-1'>Teams</span>
+          <span className='text-muted fw-semibold fs-7'>Overview Of teams By Division</span>
+        </h3>
+        <div className='card-toolbar'>
+          <button
+            type='button'
+            className='btn btn-sm btn-icon btn-color-primary btn-active-light-primary'
+            data-kt-menu-trigger='click'
+            data-kt-menu-placement='bottom-end'
+            data-kt-menu-flip='top-end'
+          >
+            <KTIcon iconName='category' className='fs-2' />
+          </button>
+          <Dropdown1 />
+        </div>
+      </div>
       <div className='card-header border-0 pt-5'>
         {/* Entête du composant */}
       </div>
