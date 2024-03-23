@@ -9,7 +9,7 @@ import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {PasswordMeterComponent} from '../../../../_metronic/assets/ts/components'
 import {useAuth} from '../core/Auth'
-import GoogleLogin from 'react-google-login'
+
 import { gapi } from 'gapi-script'
 
 const initialValues = {
@@ -162,13 +162,7 @@ export function Registration() {
           {/* begin::Google link */}
           <div id="signInButton">
 
-<GoogleLogin
-  clientId={clientId}
-  buttonText="Login"
-  onSuccess={onSuccess}
-  onFailure={onFailure}
-  cookiePolicy={'single_host_origin'}
-/>
+
 
    </div>
           {/* end::Google link */}

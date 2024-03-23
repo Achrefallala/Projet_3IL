@@ -6,8 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import { useAuth } from '../../../auth';
-import { useAppDispatch } from '../../../../../redux/slices/teamsSlice';
-import { addTeam, setPopulatedTeams } from '../../../../../redux/slices/teamsSlice';
+
 
 
 type step3props = {
@@ -53,11 +52,11 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
         };
 
         fetchTeams();
-        dispatch(setPopulatedTeams([]));
+       
 
     }, []);
 
-    const dispatch = useAppDispatch();
+   
 
 
 
@@ -73,7 +72,7 @@ const Step3Horizentale: FC<step3props> = ({ divisionId }) => {
                 console.log('error', error);
             } else {
                 setFieldValue('teams', [...(values.teams || []), newTeam]);
-                dispatch(addTeam({ ...newTeam, "logo": URL.createObjectURL(newTeam.logo) }));
+               
                 setNewTeam({ name: '', logo: null, location: '', players: [], subtitutes: [] });
                 setError(true);
             }

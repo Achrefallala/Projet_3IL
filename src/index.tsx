@@ -74,9 +74,7 @@ import './_metronic/assets/sass/style.react.scss'
 import { AppRoutes } from './app/routing/AppRoutes'
 import { AuthProvider, setupAxios } from './app/modules/auth'
 
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-import store, { persistor } from './redux/store';
+
 
 /**
  * Creates `axios-mock-adapter` instance for provided `axios` instance, add
@@ -96,8 +94,7 @@ const queryClient = new QueryClient()
 const container = document.getElementById('root')
 if (container) {
   createRoot(container).render(
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+    
         <QueryClientProvider client={queryClient}>
           <MetronicI18nProvider>
             <AuthProvider>
@@ -106,7 +103,6 @@ if (container) {
           </MetronicI18nProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-      </PersistGate>
-    </Provider>
+   
   )
 }

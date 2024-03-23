@@ -10,8 +10,7 @@ import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 import TournamentConfig from '../pages/tournament/TournamentConfig'
 import { useAuth } from '../modules/auth'
 import AdminPage from '../modules/admin-module/AdminPage'
-import Team from '../modules/TeamModule/components/Team'
-import EditPlayer from '../modules/TeamModule/components/EditPLayer'
+
 import { Step4Horizentale } from '../modules/wizards/components/steps-tournamentset-up-horizentale/step4-horizentale'
 
 
@@ -19,7 +18,6 @@ import { Step4Horizentale } from '../modules/wizards/components/steps-tournament
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
-  const TeamPage = lazy(() => import('../modules/TeamModule/TeamPage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
@@ -41,7 +39,7 @@ const PrivateRoutes = () => {
         <Route path='tournament' element={<TournamentConfig />} />
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
-        <Route path='editPlayer' element={<EditPlayer />} />
+       
         {/* Lazy Modules */}
 
 

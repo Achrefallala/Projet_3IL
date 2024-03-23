@@ -45,7 +45,7 @@ const SidebarMenuMain = () => {
       )}
 
 
-      {currentUser && currentUser.role === 'admin' &&(
+      {currentUser && currentUser?.role === 'admin' &&(
 <SidebarMenuItemWithSub
           to='/AdminPage/alltournaments'
           title='Admin'
