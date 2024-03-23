@@ -23,7 +23,7 @@ const PrivateRoutes = () => {
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
   //const TournamentPage= lazy(() => import('../pages/setupTournament/TournamentPage'))
   const TournamentPage = lazy(() => import('../modules/set-up-tournament/TournamentPage'))
-  const AgentPage = lazy(() => import('../modules/agent-module/AgentPage'))
+
   const { currentUser } = useAuth();
 
 
@@ -37,6 +37,7 @@ const PrivateRoutes = () => {
         <Route path='tournament' element={<TournamentConfig/>}/>
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
+       
         {/* Lazy Modules */}
 
 
@@ -55,26 +56,28 @@ const PrivateRoutes = () => {
 
 
         <Route
-          path='/agent/*'
+          path='team'
           element={
             <SuspensedView>
-            <AgentPage/>
+            
             </SuspensedView>
           }
         />
     
         
 
-{currentUser && currentUser.role === 'admin' &&(
-<Route
-          path='/AdminPage/*'
-          element={
-            <SuspensedView>
-              <AdminPage/>
-            </SuspensedView>
-          }
-        />
-)}
+
+        {currentUser && currentUser.role === 'admin' && (
+
+          <Route
+            path='/AdminPage/*'
+            element={
+              <SuspensedView>
+                <AdminPage />
+              </SuspensedView>
+            }
+          />
+        )}
 
 
         <Route

@@ -9,8 +9,7 @@ import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {PasswordMeterComponent} from '../../../../_metronic/assets/ts/components'
 import {useAuth} from '../core/Auth'
-//import GoogleLogin from 'react-google-login'
-//import { GoogleLogin } from '@react-oauth/google';
+
 import { gapi } from 'gapi-script'
 
 const initialValues = {

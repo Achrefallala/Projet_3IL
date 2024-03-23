@@ -20,14 +20,6 @@ interface Team {
     division: string;
 }
 
-interface Match {
-    _id: string;
-    // Assuming additional properties that define a match
-  }
-
-
-
-
 
 const MatchConfig = () => {
     const { id } = useParams();
@@ -99,8 +91,6 @@ const MatchConfig = () => {
     }
 
 
-
-
     useEffect(() => {
         const fetchTeams = async () => {
             try {
@@ -132,53 +122,6 @@ const MatchConfig = () => {
     const getAvailableTeams = (teamKey: string) => {
         return teams.filter(team => !Object.values(selectedTeams).some(selectedTeam => selectedTeam._id === team._id && selectedTeam !== selectedTeams[teamKey]));
     }
-
-
-    const [open, setOpen] = useState(false);
-    const [formDetails, setFormDetails] = useState({ email: '' , password: ''});
-
-    // Fonctions pour ouvrir et fermer la popup
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleChange = (e) => {
-        setFormDetails({ ...formDetails, [e.target.name]: e.target.value});
-    };
-
-    const [selectedMatchId, setSelectedMatchId] = useState(null);
-
-
-
-
-    const handleAddDetail = async () => {
-        const apiUrl = 'http://localhost:3001/user/registerAgent';
-        
-        try {
-            const response = await axios.post(apiUrl, {
-                email: formDetails.email,
-                password: formDetails.password,
-                 
-            }, {
-                headers: {
-                    Authorization: `Bearer ${auth?.api_token}`, // Assuming your auth token is required and available
-                }
-            });
-    
-            console.log('Agent registered successfully:', response.data);
-            alert('Agent registered successfully');
-            setFormDetails({ email: '', password: '' }); // Reset form details
-            setOpen(false); // Close the dialog
-        } catch (error) {
-            console.error('Error registering agent:', error);
-            alert('Error registering agent. Please try again.');
-        }
-    };
-    
 
     return (
         <div>
@@ -325,47 +268,11 @@ const MatchConfig = () => {
                                     </div>
                                 )}
                             </div>
-                            
                         </div>
                         
                     </div>
-                   <div>
-
-    
-       <div>
-       
-        <div style={{ margin: '20px 0' }}>
-          {/* Placeholder for match details */}
-          <Button variant="outlined" onClick={() => handleClickOpen()}>
-            Add Agent to Match
-          </Button>
-        </div>
-    
-
-      {/* Dialog for adding an agent */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Agent</DialogTitle>
-        <DialogContent>
-          <TextField autoFocus margin="dense" id="email" label="Email" type="email" name="email" fullWidth variant="outlined" value={formDetails.email} onChange={handleChange} />
-          <TextField margin="dense" id="password" label="Password" type="password" name="password" fullWidth variant="outlined" value={formDetails.password} onChange={handleChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAddDetail}>Add Agent</Button>
-        </DialogActions>
-      </Dialog>
-       </div>
-
-
-                   </div>
-
                     </div>
                     
-                    
-
-                        
-
-
                     </div>
                 ))}
                 <br />
