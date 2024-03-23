@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useState, useEffect} from 'react'
 import {useFormik} from 'formik'
-import * as Yup from 'yup'
+import * as Yup from 'yup';
 import clsx from 'clsx'
 import {getUserByToken, registergoogle,register} from '../core/_requests'
 import {Link} from 'react-router-dom'
