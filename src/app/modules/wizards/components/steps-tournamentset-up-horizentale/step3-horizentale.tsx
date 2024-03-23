@@ -19,8 +19,6 @@ const Step3Horizentale:FC<step3props> = ({ divisionId }) =>{
     const [newTeam, setNewTeam] = useState({ name: '', logo: null , location: '' });
     const { auth } = useAuth();
     const [error, setError] = useState(true);
-    console.log('values ya nizar ',values);
-    
    
     
 
@@ -47,7 +45,7 @@ const Step3Horizentale:FC<step3props> = ({ divisionId }) =>{
         };
 
         fetchTeams();
-        }, [divisionId, auth?.api_token]);
+        }, []);
 
 
 

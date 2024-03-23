@@ -53,8 +53,6 @@ const TableWidgetMatchAgent: React.FC = () => {
           },
         });
         if (response.data) {
-          console.log('Match data received:', response.data);
-          
           setMatch(response.data);
         } else {
           console.error('No match data received');
