@@ -4,6 +4,8 @@ import React, {useState} from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../_metronic/helpers'
 import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'
 
+
+
 const BuilderPage: React.FC = () => {
   const [tab, setTab] = useState('Sidebar')
   const [config, setConfig] = useState<ILayout>(getLayoutFromLocalStorage())
@@ -29,8 +31,13 @@ const BuilderPage: React.FC = () => {
     }, 1000)
   }
 
+
+
+
+
   return (
     <>
+   
       <div className='card mb-10'>
         <div className='card-body d-flex align-items-center py-8'>
           <div className='d-flex h-80px w-80px flex-shrink-0 flex-center position-relative'>

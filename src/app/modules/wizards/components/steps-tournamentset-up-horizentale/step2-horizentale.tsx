@@ -2,11 +2,16 @@ import { FC , useState} from "react";
 import {ErrorMessage, Field , useFormikContext} from 'formik'
 import { ISetUpTournament } from "../SetUpTournamentWizardHelper";
 
+
 const Step2Horizentale : FC = () => {
 
 
     const [enableExtraTime, setEnableExtraTime] = useState(false);
     const { setFieldValue } = useFormikContext<ISetUpTournament>();
+    // cuurenyt form values
+    const { values } = useFormikContext<ISetUpTournament>();
+    // current tournament type value
+    console.log(values.tournamentType);
 
     const handleExtraTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEnableExtraTime(event.target.checked);
