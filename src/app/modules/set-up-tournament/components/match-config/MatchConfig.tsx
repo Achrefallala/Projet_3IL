@@ -7,9 +7,6 @@ import TextField from '@mui/material/TextField';
 import { toAbsoluteUrl } from "../../../../../_metronic/helpers";
 import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 
 interface Team {
@@ -20,6 +17,14 @@ interface Team {
     division: string;
 }
 
+interface Match {
+    _id: string;
+    // Assuming additional properties that define a match
+  }
+
+
+
+
 
 const MatchConfig = () => {
     const { id } = useParams();
@@ -27,8 +32,6 @@ const MatchConfig = () => {
     const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeams, setSelectedTeams] = useState<{team1?: Team, team2?: Team}>({});
     const [numberTeams, setNumberTeams] = useState<number>(0);  
-    const navigate = useNavigate();
-
 
     const numberOfMatches = Math.floor(numberTeams / 2);
 
@@ -51,8 +54,6 @@ const MatchConfig = () => {
     };
 
     const handleSubmit = async (values: any) => {
-
-            const toastId = toast("Waiting...", { autoClose: false });
        
             const matches = values.matches.map((match: any, index: number) => {
                 return {
@@ -72,23 +73,14 @@ const MatchConfig = () => {
                     Authorization: `Bearer ${auth?.api_token}`
                 }
             }); 
-            toast.update(toastId, {
-                render: "Almost there! Finalizing your tournament details...",
-                type: 'success',
-                autoClose: 3000,
-                onClose: () => navigate('/dashboard') // replace '/your-next-page' with the path to your next page
-            });
+
             console.log('Matches created:', response.data);
         } catch (error) {
             console.error('Error creating matches:', error);
-            toast.update(toastId, {
-                render: "Error creating matches",
-                type: 'error',
-                autoClose: 3000,
-                onClose: () => navigate('/error-page') // replace '/error-page' with the path to your error page
-            });
         }
     }
+
+
 
 
     useEffect(() => {
@@ -109,7 +101,7 @@ const MatchConfig = () => {
         };
 
         fetchTeams();
-    }, [auth?.api_token , id]);
+    }, []);
 
     console.log(numberTeams)
 
@@ -123,9 +115,55 @@ const MatchConfig = () => {
         return teams.filter(team => !Object.values(selectedTeams).some(selectedTeam => selectedTeam._id === team._id && selectedTeam !== selectedTeams[teamKey]));
     }
 
+
+    const [open, setOpen] = useState(false);
+    const [formDetails, setFormDetails] = useState({ email: '' , password: ''});
+
+    // Fonctions pour ouvrir et fermer la popup
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleChange = (e) => {
+        setFormDetails({ ...formDetails, [e.target.name]: e.target.value});
+    };
+
+    const [selectedMatchId, setSelectedMatchId] = useState(null);
+
+
+
+
+    const handleAddDetail = async () => {
+        const apiUrl = 'http://localhost:3001/user/registerAgent';
+        
+        try {
+            const response = await axios.post(apiUrl, {
+                email: formDetails.email,
+                password: formDetails.password,
+                 
+            }, {
+                headers: {
+                    Authorization: `Bearer ${auth?.api_token}`, // Assuming your auth token is required and available
+                }
+            });
+    
+            console.log('Agent registered successfully:', response.data);
+            alert('Agent registered successfully');
+            setFormDetails({ email: '', password: '' }); // Reset form details
+            setOpen(false); // Close the dialog
+        } catch (error) {
+            console.error('Error registering agent:', error);
+            alert('Error registering agent. Please try again.');
+        }
+    };
+    
+
     return (
         <div>
-             <ToastContainer />
             {/** header */}
             <div className="position-relative">
                 <img
@@ -268,11 +306,47 @@ const MatchConfig = () => {
                                     </div>
                                 )}
                             </div>
+                            
                         </div>
                         
                     </div>
+                   <div>
+
+    
+       <div>
+       
+        <div style={{ margin: '20px 0' }}>
+          {/* Placeholder for match details */}
+          <Button variant="outlined" onClick={() => handleClickOpen()}>
+            Add Agent to Match
+          </Button>
+        </div>
+    
+
+      {/* Dialog for adding an agent */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Add Agent</DialogTitle>
+        <DialogContent>
+          <TextField autoFocus margin="dense" id="email" label="Email" type="email" name="email" fullWidth variant="outlined" value={formDetails.email} onChange={handleChange} />
+          <TextField margin="dense" id="password" label="Password" type="password" name="password" fullWidth variant="outlined" value={formDetails.password} onChange={handleChange} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleAddDetail}>Add Agent</Button>
+        </DialogActions>
+      </Dialog>
+       </div>
+
+
+                   </div>
+
                     </div>
                     
+                    
+
+                        
+
+
                     </div>
                 ))}
                 <br />
@@ -283,7 +357,6 @@ const MatchConfig = () => {
         </Form>
             )}
         </Formik>
-        
         </div>
     );
 }

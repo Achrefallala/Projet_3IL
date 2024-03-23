@@ -21,6 +21,8 @@ const SidebarMenuMain = () => {
       <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' />
 
 
+     
+      <SidebarMenuItem to='/agent/Match' icon='switch' title='Match' fontIcon='bi-layers' />
 
 
       {currentUser && currentUser.role === 'agent' &&(
@@ -31,9 +33,7 @@ const SidebarMenuMain = () => {
 
 
       {currentUser && currentUser.role === 'creator' &&(
-        <>
-      <SidebarMenuItem to='/tournament' icon='switch' title='Create tournament' fontIcon='bi-layers' />
-      <SidebarMenuItem to='/setuptournament/creatordashboard' icon='element-11' title='Dashboard' fontIcon='bi-layers' /></>
+      <SidebarMenuItem to='/tournament' icon='switch' title='tournament' fontIcon='bi-layers' />
       )}
       <div className='menu-item'>
         <div className='menu-content pt-8 pb-2'>
@@ -64,7 +64,8 @@ const SidebarMenuMain = () => {
         >
           <SidebarMenuItem to='/AdminPage/alltournaments' title='All the Tournaments' hasBullet={true} />
           <SidebarMenuItem to='/AdminPage/Users' title='All Users' hasBullet={true} />
-    
+          <SidebarMenuItem to='/AdminPage/allteams' title='All Teams' hasBullet={true} />
+          <SidebarMenuItem to='/AdminPage/allmatchs' title='All Matches' hasBullet={true} />
         </SidebarMenuItemWithSub>
 
 )}

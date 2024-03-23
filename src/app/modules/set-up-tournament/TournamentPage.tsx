@@ -4,8 +4,6 @@ import SetUpTournament from './components/my-tournaments/SetUpTournament';
 import DisplayDivisions from './components/tournaments-divisions/displayDivisions';
 import DivisionConfig from './components/division-config/DivisionConfig';
 import MatchConfig from './components/match-config/MatchConfig';
-import SingleMatchBracket from './components/single-match-elimination-bracket/SingleMtachBracket';
-import CreatorDashboard from './components/creator dashboard/CreatorDashboard';
 
 
 const TournamentPage=()=>(
@@ -46,24 +44,6 @@ const TournamentPage=()=>(
                         element={
                             <>
                                 <MatchConfig />
-                            </>
-                        }
-                    />
-
-                    <Route
-                        path='bracket/:id'
-                        element={
-                            <>
-                                <SingleMatchBracket />
-                            </>
-                        }
-                    />
-
-                    <Route
-                        path='creatordashboard'
-                        element={
-                            <>
-                                <CreatorDashboard/>
                             </>
                         }
                     />

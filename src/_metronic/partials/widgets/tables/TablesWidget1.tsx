@@ -5,7 +5,6 @@ import {Dropdown1} from '../../content/dropdown/Dropdown1'
 import { Link } from 'react-router-dom';
 import { Modal , Button } from 'react-bootstrap';
 
-
 type Props = {
   Divisions: any[]
 }
@@ -20,18 +19,11 @@ type DivisionType = {
   // add other properties of division here...
 };
 
-
-
-  
-
-
 const TablesWidget1: React.FC<Props> = ({Divisions}) => {
   const [show, setShow] = useState(false);
   const [currentDivision, setCurrentDivision] = useState<DivisionType | null>(null);
   console.log(currentDivision)
 
-
- 
 
   const handleCheckClick = (division) => {
     setCurrentDivision(division);
@@ -41,11 +33,6 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
   const handleClose = () => {
     setShow(false);
   };
-
-
-  
-
-
 
   
   return (
@@ -94,8 +81,6 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
         </Modal>
 
               {/** end of the modal pop up division details */}
-
-            
       {/* begin::Header */}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
@@ -176,36 +161,19 @@ const TablesWidget1: React.FC<Props> = ({Divisions}) => {
                   <td className='text-end'>
                   {(division.status === 'progress' || division.status === 'completed') ? (
                         <>
-
-                            {(division.status === 'completed' && division.tournamentType === 'singlematch') ? (
-                                 <Link to={`/setuptournament/bracket/${division._id}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary ms-3 me-3'>
-                                 <KTIcon iconName='eye' className='fs-2 ' />
-                                  </Link>
-                              
-                            ) : null // or replace null with any other JSX you want to render if the condition is false
-                            }
-
-
                             <button className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary' onClick={() => handleCheckClick(division)}>
                                 <KTIcon iconName='check' className='fs-2' />
                             </button>
-                           
                             {division.tournamentType === 'singlematch' && division.status !== 'completed' &&
                             <Link to={`/setuptournament/matchconfig/${division._id}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary ms-3'>
                                 <KTIcon iconName='arrow-right' className='fs-2' />
                             </Link>}
-
-                            
                         </>
-
                     ) : (
                         <Link to={`/setuptournament/divisionconfig/${division._id}/${division.tournament}`} className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'>
                             <KTIcon iconName='arrow-right' className='fs-2' />
                         </Link>
                     )}
-                 
-
-                    
                   </td>
                 </tr>
               ))}

@@ -18,16 +18,15 @@ const EngageWidget10 = ({className}: Props) => (
       <div className='mb-10'>
         <div className='fs-2hx fw-bold text-gray-800 text-center mb-13'>
           <span className='me-2'>
-          Welcome to the arena of champions
-           where every match is a story waiting to be told .
+            Try our all new Enviroment with
             <br />
             <span className='position-relative d-inline-block text-danger'>
               <Link
-                to='/tournament'
+                to='/crafted/pages/profile/overview'
                 className='text-danger
               opacity-75-hover'
               >
-                create tournament 
+                Pro Plan
               </Link>
 
               <span className='position-absolute opacity-15 bottom-0 start-0 border-4 border-danger border-bottom w-100'></span>
@@ -36,7 +35,9 @@ const EngageWidget10 = ({className}: Props) => (
           for Free
         </div>
 
-        
+        <div className='text-center'>
+          <a href='#'>Upgrade Now</a>
+        </div>
       </div>
       <img
         className='mx-auto h-150px h-lg-200px  theme-light-show'

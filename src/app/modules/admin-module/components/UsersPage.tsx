@@ -1,5 +1,7 @@
 import {useState , useEffect}from 'react'
 import axios from 'axios';
+
+import { TablesWidget11Admin } from '../../../../_metronic/partials/widgets/tables/TablesWidget11Admin';
 import { useAuth } from '../../auth';
 import { TablesWidget11AdminUsers } from '../../../../_metronic/partials/widgets/tables/TablesWidget11AdminUsers';
 
@@ -26,7 +28,7 @@ function UsersPage(){
   
     useEffect(() => {
       fetchUsers();
-    }, [ auth?.api_token]);
+    }, []);
   
 
 
