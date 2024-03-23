@@ -152,7 +152,7 @@ const TableWidgetMatchAgent: React.FC = () => {
   }
 
   const events = [{
-    title: `${match.team1.name} vs ${match.team2.name}`,
+    title: `${match?.team1.name} vs ${match.team2?.name}`,
     start: new Date(match.time),
     end: new Date(match.time), 
     allDay: false,
@@ -173,7 +173,7 @@ const TableWidgetMatchAgent: React.FC = () => {
           
           <div className="col text-center">
             <h5 className="card-title">VS</h5>
-            <p className="card-text"><small className="text-muted">{match.division.name}</small></p>
+            <p className="card-text"><small className="text-muted">{match.division?.name}</small></p>
             <p className="card-text">{new Date(match.time).toLocaleString()}</p>
             <p style={{fontSize: '20px', fontWeight: 'bold'}}>Score: {match.scoreTeam1} - {match.scoreTeam2}</p>
           </div>
