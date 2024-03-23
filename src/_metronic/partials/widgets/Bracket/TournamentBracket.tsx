@@ -51,15 +51,20 @@ const TournamentBracket: React.FC<TournamentBracketProps> = ({ matches }) => {
 
   return (
     <div style={{ width: 'auto', height: '600px', overflow: 'auto', whiteSpace: 'nowrap' }}>
-      {Object.keys(rounds).map((round) => (
-        <div key={round} style={{ display: 'inline-block', width: '400px', verticalAlign: 'top', margin: '0 10px' }}>
-          <h2 className='text-center'>Round {round}</h2>
-          {rounds[round].map((match) => (
-            <MatchComponent key={match._id} match={match} />
-          ))}
-        </div>
+  {Object.keys(rounds).map((round, index, allRounds) => (
+    <div key={round} style={{ display: 'inline-block', width: '400px', verticalAlign: 'top', margin: '0 10px' }}>
+      <h2 className='text-center'>
+        {index === allRounds.length - 1 ? 'Final' : 
+         index === allRounds.length - 2 ? 'Semi Final' : 
+         `Round ${round}`}
+      </h2>
+      {rounds[round].map((match) => (
+        <MatchComponent key={match._id} match={match} />
       ))}
     </div>
+  ))}
+</div>
+
   );
 };
 

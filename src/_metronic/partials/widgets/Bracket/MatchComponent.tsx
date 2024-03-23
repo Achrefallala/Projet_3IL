@@ -16,7 +16,7 @@ const MatchComponent = ({ match }) => {
     const timeStr = dateTime ? dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
     return (
-        <Card sx={{ width: '100%', maxWidth: 800, margin: 'auto', mt: 2, mb: 2 ,
+        <Card sx={{ width: '100%', maxWidth: 900, margin: 'auto', mt: 2, mb: 2 ,
         borderWidth: 1, // Optional: You can adjust the border width
         borderStyle: 'solid', // Necessary to show the border
         borderColor: 'black', // Example: A blue color. Adjust the color code to match your design

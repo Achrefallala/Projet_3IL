@@ -49,6 +49,8 @@ const TableWidgetMatchAgent: React.FC = () => {
           },
         });
         if (response.data) {
+          console.log('Match data received:', response.data);
+          
           setMatch(response.data);
         } else {
           console.error('No match data received');
@@ -132,7 +134,15 @@ const TableWidgetMatchAgent: React.FC = () => {
            <img src={`http://localhost:3001/${match.team1.logo}`}
             alt={match.team1.name} style={{ width: '100px', height: '100px' }} />
              <div className="mt-2"><strong>{match.team1.name}</strong></div>
-              <Button onClick={() => handleScoreUpdate('team1')}>+1 Team 1</Button> </div> <div className="col text-center"> <h5 className="card-title">VS</h5> <p className="card-text"><small className="text-muted">{match.division.name}</small></p> <p className="card-text">{new Date(match.time).toLocaleString()}</p> <p>Score: {match.scoreTeam1} - {match.scoreTeam2}</p> </div> <div className="col text-center"> <img src={`http://localhost:3001/${match.team2.logo}`} alt={match.team2.name} style={{ width: '100px', height: '100px' }} /> <div className="mt-2"><strong>{match.team2.name}</strong></div> <Button onClick={() => handleScoreUpdate('team2')}>+1 Team 2</Button> </div> </div>
+              <Button onClick={() => handleScoreUpdate('team1')}>+1 Team 1</Button> </div>
+               <div className="col text-center">
+                 <h5 className="card-title">VS</h5> 
+                 <p className="card-text"><small className="text-muted"></small></p> 
+                 <p className="card-text">{new Date(match.time).toLocaleString()}</p> 
+                 <p>Score: {match.scoreTeam1} - {match.scoreTeam2}</p> </div> <div className="col text-center">
+                   <img src={`http://localhost:3001/${match.team2.logo}`} alt={match.team2.name} style={{ width: '100px', height: '100px' }} />
+                    <div className="mt-2"><strong>{match.team2.name}</strong></div> <Button onClick={() => handleScoreUpdate('team2')}>+1 Team 2</Button> </div> 
+                    </div>
         <div>
           <Button onClick={() => handleMatchStatusChange('En cours')} variant="contained" color="primary">
             Début du Match

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../../modules/auth';
 import TournamentBracket from '../../../../../_metronic/partials/widgets/Bracket/TournamentBracket';
+import axios from 'axios';
 
 
 
@@ -31,12 +32,12 @@ const SingleMatchBracket = () => {
     const fetchDivisions = async () => {
         try {
           // change it with axios not fetch 
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/match/getMatches/${id}`, {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/match/getMatches/${id}`, {
             headers: {
               Authorization: `Bearer ${auth?.api_token}`
             }
           });
-          const data = await response.json();
+          const data = await response.data;
           console.log('bracket matches', data.matches);
           setMatches(data.matches);
         } catch (error) {

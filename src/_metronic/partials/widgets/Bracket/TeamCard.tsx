@@ -17,7 +17,7 @@ const TeamCard = ({ team, matchOutcome }) => {
     };
 
     return (
-        <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 150, textAlign: 'center', padding: '10px' }}>
+        <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 150, textAlign: 'center', padding: '3px' }}>
             <CardMedia
                 component="img"
                 sx={{ width: 60, height: 60, mb: 1 }}
@@ -28,12 +28,14 @@ const TeamCard = ({ team, matchOutcome }) => {
                 <Typography variant="subtitle1" component="div" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
                     {team?.name || 'TBD'}
                 </Typography>
+                {/** 
                 <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1rem' }}>
                     {team?.location || 'N/A'}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1rem', fontWeight: 'fontWeightMedium' }}>
                     Division: {team?.division || 'N/A'}
                 </Typography>
+                */}
                 {/* Conditionally render the match outcome with Chip for stylish appearance */}
                 {matchOutcome && (
                     <Chip
