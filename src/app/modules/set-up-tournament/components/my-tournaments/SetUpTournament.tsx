@@ -3,6 +3,7 @@ import { useAuth } from '../../../../modules/auth';
 import axios from 'axios';
 import {TablesWidget11} from '../../../../../_metronic/partials/widgets/tables/TablesWidget11';
 
+
 function SetUpTournament(){
     const [tournaments, setTournaments] = useState([]);
     const { auth } = useAuth();
@@ -24,7 +25,7 @@ function SetUpTournament(){
   
     useEffect(() => {
       fetchTournaments();
-    }, []);
+    });
   
     
     
@@ -33,6 +34,21 @@ function SetUpTournament(){
     // tableau de dependances condition d update de useEffect
     return(
         <div>
+            {/* tournament headerX
+            <img
+                    src={toAbsoluteUrl('/media/custom icon/tournament-header.png')}
+                    className='w-100'
+                    alt=''
+                    style={{
+                        height: '5%', // Adjust as needed
+                        objectFit: 'cover'
+                    }}
+                />
+
+                  */}
+
+            {/* tournament header */}
+            <br />
             <TablesWidget11 tournaments={tournaments}  refreshTournaments={fetchTournaments} />
          
 

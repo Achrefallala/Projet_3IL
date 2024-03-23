@@ -18,22 +18,23 @@ const Mixed: FC = () => {
     <>
       {/* begin::Row */}
       <div className='row g-5 g-xl-8'>
-        {/* begin::Col */}
+        {/* begin::Col 
         <div className='col-xl-4'>
           <MixedWidget1 className='card-xl-stretch mb-xl-8' color='primary' />
-        </div>
+        </div>  */}
         {/* end::Col */}
 
-        {/* begin::Col */}
+        {/* begin::Col 
         <div className='col-xl-4'>
           <MixedWidget1 className='card-xl-stretch mb-xl-8' color='danger' />
-        </div>
+        </div> */}
         {/* end::Col */}
 
-        {/* begin::Col */}
+        {/* begin::Col 
         <div className='col-xl-4'>
           <MixedWidget1 className='card-xl-stretch mb-5 mb-xl-8' color='success' />
-        </div>
+        </div>  */}
+        
         {/* end::Col */}
       </div>
       {/* end::Row */}
@@ -260,12 +261,22 @@ const Mixed: FC = () => {
       {/* begin::Row */}
       <div className='row g-5 g-xl-8'>
         {/* begin::Col */}
-        
+        <div className='col-xl-4'>
+          <MixedWidget8
+            className='card-xl-stretch mb-xl-8'
+            chartColor='primary'
+            chartHeight='150px'
+          />
+        </div>
         {/* end::Col */}
 
         {/* begin::Col */}
         <div className='col-xl-4'>
-         
+          <MixedWidget8
+            className='card-xl-stretch mb-xl-8'
+            chartColor='success'
+            chartHeight='150px'
+          />
         </div>
         {/* end::Col */}
 

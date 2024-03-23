@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import clsx from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,14 +6,10 @@ import { useFormik } from 'formik';
 import { getUserByToken, login } from '../core/_requests';
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { useAuth } from '../core/Auth';
-import { useGoogleLogin } from '@react-oauth/google'; 
+
+import { on } from 'events';
+import { gapi } from 'gapi-script';
 import axios from 'axios';
-
-
-
-
-
-
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -33,13 +29,15 @@ const initialValues = {
 };
 
 
+const clientId = "430621675041-97e4t4mj4t67jv4ror7d733sbju6di8l.apps.googleusercontent.com"
 
 
 
 export function Login() {
   const [loading, setLoading] = useState(false);
   const { saveAuth, setCurrentUser } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Now using useNavigate for redirection
+
 
   const formik = useFormik({
     initialValues,
@@ -47,23 +45,22 @@ export function Login() {
     onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true);
       try {
-        const { data: authData } = await login(values.email, values.password);
-        console.log('Auth data:', authData);
-        saveAuth(authData);
-        const { data: user } = await getUserByToken(authData.api_token);
-        console.log('User:', user);
+        const { data: auth } = await login(values.email, values.password);
+        console.log('data normal user login',auth)
+        saveAuth(auth);
+        const { data: user } = await getUserByToken(auth.api_token);
         setCurrentUser(user);
 
         setLoading(false);
-        navigate('/dashboard');
-      } catch (error) {
+      } catch (error:any) {
         console.error(error);
         saveAuth(undefined);
         setStatus('The login details are incorrect');
         setSubmitting(false);
         setLoading(false);
 
-        if ((error as any).response && (error as any).response.status === 403) {
+
+        if (error.response && error.response.status === 403) {
           setStatus('You are banned');
         } else {
           setStatus('The login details are incorrect');
@@ -72,58 +69,58 @@ export function Login() {
     },
   });
 
-  const onSuccess = async (response) => {
-    console.log('Google login successful', response);
+  const onSuccess = async (googleData) => {
     try {
-      const { data } = await axios.post('http://localhost:3001/user/google-login', {
-        code: response.code, 
+     
+      const response = await axios.post('http://localhost:3001/user/google-login', {
+        tokenId: googleData.tokenId,
       });
-      console.log('Google login data:', data.token);
-      console.log('Google login user:', data.user);
-      if (data.token) {
-        localStorage.setItem('token', data.token); 
-        
-        saveAuth(data); 
-        const { data: user } = await getUserByToken(data.token);
-        console.log('User:', user);
-        setCurrentUser(user); 
-        
   
-        setLoading(false);
-        alert('Login successful');
-      }
-    } catch (error) {
-      console.error('Error during Google login:', error);
-      alert('Login failed. Please try again.');
-    }
-  };
-
- /* localStorage.setItem('token', data.api_token);
+      
+      const data = response.data;
+      console.log('data googgle',data.api_token);
+  
+      if (data.api_token) {
+        localStorage.setItem('token', data.api_token);
         console.log(data.user);
+        console.log(data);
         saveAuth(data);
       
         setCurrentUser(data.user);
-        alert(Connexion réussie. Bienvenue ${data.user.name} !);
-
-  
-  */
-  
-
-
-  const onFailure = () => {
-    console.log('Login failed');
-    alert("Failed to login with Google.");
+        alert(`Connexion réussie. Bienvenue ${data.user.name} !`);
+       
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion avec Google:", error);
+    
+      alert("La connexion a échoué. Veuillez réessayer.");
+    }
   };
-
-  // Initialisation du login Google
-  const googleLogin = useGoogleLogin({
-    onSuccess: onSuccess,
-    onError: onFailure,
-    flow: 'auth-code',
-  });
   
+
+  const onFailure = (res) => {
+    console.log('Login failed: res:', res);
+    alert(
+      `Failed to login. 😢 Please ping this to repo owner twitter.com/sivanesh_fiz`
+    );
+  }
+
+  useEffect(() => {
+    function start(){
+      gapi.client.init({
+        clientId: clientId,
+        scope:""
+      })
+    };
+    gapi.load('client:auth2', start);
+    });
   return (
-    <form className='form w-100' onSubmit={formik.handleSubmit} noValidate id='kt_login_signin_form'>
+    <form
+      className='form w-100'
+      onSubmit={formik.handleSubmit}
+      noValidate
+      id='kt_login_signin_form'
+    >
       {/* begin::Heading */}
       <div className='text-center mb-11'>
         <h1 className='text-dark fw-bolder mb-3'>Sign In</h1>
@@ -136,11 +133,11 @@ export function Login() {
         {/* begin::Col */}
         <div className='col-md-6'>
           {/* begin::Google link */}
-          <div id="signInButton">
-          <button type="button" onClick={googleLogin} className="btn btn-primary">
-        Sign in with Google
-      </button>
-      </div>
+         <div id="signInButton">
+
+      
+
+         </div>
           {/* end::Google link */}
         </div>
         {/* end::Col */}
@@ -149,7 +146,7 @@ export function Login() {
         <div className='col-md-6'>
           {/* begin::Google link */}
           <a
-            href='#'
+            href='/hello'
             className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
           >
             <img

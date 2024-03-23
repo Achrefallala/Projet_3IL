@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useRef, useState} from 'react'
+import React, {FC, useEffect, useRef, useState , } from 'react'
 import {Step1Horizentale} from './steps-tournamentset-up-horizentale/step1-horizentale'
 import {Step2Horizentale} from './steps-tournamentset-up-horizentale/step2-horizentale'
 import {Step3Horizentale} from './steps-tournamentset-up-horizentale/step3-horizentale'
