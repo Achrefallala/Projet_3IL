@@ -69,6 +69,7 @@
 
   // Input Empty State
   &.image-input-empty {
+
     [data-kt-image-input-action='remove'],
     [data-kt-image-input-action='cancel'] {
       display: none;
@@ -106,5 +107,9 @@
       border: 3px solid var(--#{$prefix}body-bg);
       box-shadow: var(--#{$prefix}box-shadow);
     }
+
   }
+
+
 }
+

@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React from 'react'
-import {useIntl} from 'react-intl'
-import {KTIcon} from '../../../../helpers'
-import {SidebarMenuItemWithSub} from './SidebarMenuItemWithSub'
-import {SidebarMenuItem} from './SidebarMenuItem'
+import { useIntl } from 'react-intl'
+import { KTIcon } from '../../../../helpers'
+import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
+import { SidebarMenuItem } from './SidebarMenuItem'
 import { useAuth } from '../../../../../app/modules/auth/core/Auth';
 
 const SidebarMenuMain = () => {
@@ -15,7 +15,7 @@ const SidebarMenuMain = () => {
       <SidebarMenuItem
         to='/dashboard'
         icon='element-11'
-        title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
+        title={intl.formatMessage({ id: 'MENU.DASHBOARD' })}
         fontIcon='bi-app-indicator'
       />
       <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' />
@@ -43,8 +43,8 @@ const SidebarMenuMain = () => {
         </div>
       </div>
 
- 
-      {currentUser && currentUser.role === 'creator' &&(
+
+      {currentUser && currentUser.role === 'creator' && (
         <SidebarMenuItemWithSub
           to='/crafted/setuptournament'
           title='Set Up Tournament'
@@ -52,13 +52,14 @@ const SidebarMenuMain = () => {
           fontIcon='bi-person'
         >
           <SidebarMenuItem to='/setuptournament/mytournaments' title='My Tournament(s)' hasBullet={true} />
-    
+          <SidebarMenuItem to='/team' title='Setup players' hasBullet={true} />
         </SidebarMenuItemWithSub>
+        
       )}
 
 
-      {currentUser && currentUser.role === 'admin' &&(
-<SidebarMenuItemWithSub
+      {currentUser && currentUser.role === 'admin' && (
+        <SidebarMenuItemWithSub
           to='/AdminPage/alltournaments'
           title='Admin'
           icon='element-plus'
@@ -70,7 +71,7 @@ const SidebarMenuMain = () => {
           <SidebarMenuItem to='/AdminPage/allmatchs' title='All Matches' hasBullet={true} />
         </SidebarMenuItemWithSub>
 
-)}
+      )}
 
 
 
@@ -183,4 +184,4 @@ const SidebarMenuMain = () => {
   )
 }
 
-export {SidebarMenuMain}
+export { SidebarMenuMain }

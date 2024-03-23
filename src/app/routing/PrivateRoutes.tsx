@@ -1,21 +1,23 @@
-import {lazy, FC, Suspense} from 'react'
-import {Route, Routes, Navigate} from 'react-router-dom'
-import {MasterLayout} from '../../_metronic/layout/MasterLayout'
+import { lazy, FC, Suspense } from 'react'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
-import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {MenuTestPage} from '../pages/MenuTestPage'
-import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
-import {WithChildren} from '../../_metronic/helpers'
+import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
+import { MenuTestPage } from '../pages/MenuTestPage'
+import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
+import { WithChildren } from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 import TournamentConfig from '../pages/tournament/TournamentConfig'
 import { useAuth } from '../modules/auth'
 import AdminPage from '../modules/admin-module/AdminPage'
+import EditPlayer from '../modules/TeamModule/components/EditPLayer'
 
 
 
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
+  const ManagePlayers = lazy(() => import('../modules/TeamModule/ManagePlayers'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
@@ -34,22 +36,25 @@ const PrivateRoutes = () => {
         <Route path='auth/*' element={<Navigate to='/dashboard' />} />
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
-        <Route path='tournament' element={<TournamentConfig/>}/>
+        <Route path='tournament' element={<TournamentConfig />} />
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
+        <Route path='editPlayer' element={<EditPlayer />} />
         {/* Lazy Modules */}
 
 
-{currentUser && currentUser.role === 'creator' &&(
-        <Route
-          path='/setuptournament/*'
-          element={
-            <SuspensedView>
-              <TournamentPage />
-            </SuspensedView>
-          }
-        />
-    
+        {currentUser && currentUser.role === 'creator' && (
+
+
+          <Route
+            path='/setuptournament/*'
+            element={
+              <SuspensedView>
+                <TournamentPage />
+              </SuspensedView>
+            }
+          />
+
         )}
 
 
@@ -58,23 +63,35 @@ const PrivateRoutes = () => {
           path='/agent/*'
           element={
             <SuspensedView>
-            <AgentPage/>
+              <AgentPage />
             </SuspensedView>
           }
         />
-    
-        
 
-{currentUser && currentUser.role === 'admin' &&(
-<Route
-          path='/AdminPage/*'
-          element={
-            <SuspensedView>
-              <AdminPage/>
-            </SuspensedView>
-          }
-        />
-)}
+
+
+        {currentUser && currentUser.role === 'admin' && (
+          <Route
+            path='/AdminPage/*'
+            element={
+              <SuspensedView>
+                <ManagePlayers />
+              </SuspensedView>
+            }
+          />
+
+
+        {currentUser && currentUser.role === 'admin' && (
+
+          <Route
+            path='/AdminPage/*'
+            element={
+              <SuspensedView>
+                <AdminPage />
+              </SuspensedView>
+            }
+          />
+        )}
 
 
         <Route
@@ -132,7 +149,7 @@ const PrivateRoutes = () => {
   )
 }
 
-const SuspensedView: FC<WithChildren> = ({children}) => {
+const SuspensedView: FC<WithChildren> = ({ children }) => {
   const baseColor = getCSSVariableValue('--bs-primary')
   TopBarProgress.config({
     barColors: {
@@ -144,4 +161,4 @@ const SuspensedView: FC<WithChildren> = ({children}) => {
   return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
 }
 
-export {PrivateRoutes}
+export { PrivateRoutes }

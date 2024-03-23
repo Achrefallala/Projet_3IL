@@ -1,22 +1,16 @@
-import { FC } from "react";
-import TeamModal from "../../../TeamModule/components/TeamModal";
+import TeamModal from "./components/TeamModal";
 import { useState } from "react";
-import Team from "../../../TeamModule/components/Team";
+import Team from "./components/Team";
 import { Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { isString } from "formik";
 import Button from '@mui/material/Button';
 
-
-const Step4Horizentale: FC = () => {
+function ManagePlayers() {
 
     const [showTeamModal, setShowTeamModal] = useState(false);
 
     const handleCloseModal = () => setShowTeamModal(false);
-
-
-
-
 
 
     return (
@@ -24,10 +18,7 @@ const Step4Horizentale: FC = () => {
 
             <Row className="d-flex">
 
-                <Col
-                    style={{
-                        marginLeft: '-45%',
-                    }}>
+                <Col>
                     <Button
                         onClick={() => setShowTeamModal(true)}
                         variant="outlined">
@@ -38,15 +29,14 @@ const Step4Horizentale: FC = () => {
 
             </Row>
             <Row>
-                <Col style={{
-                    marginLeft: '-45%',
-                }}>
+                <Col>
                     <Team />
                 </Col>
 
             </Row >
         </Container >
     )
+
 }
 
-export { Step4Horizentale };
+export default ManagePlayers;
